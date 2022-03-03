@@ -1,0 +1,4 @@
+worker: 
+  - connection: "config-aws-tokyo"
+    count: 1
+    spec: t2.medium

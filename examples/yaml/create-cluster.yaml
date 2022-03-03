@@ -1,0 +1,17 @@
+name: "cb-cluster"
+label: "lab."
+description: "create a cluster test"
+controlPlane:
+  - connection: "config-aws-tokyo"
+    count: 1
+    spec: "t2.medium"
+worker: 
+  - connection: "config-aws-tokyo"
+    count: 1
+    spec: t2.medium
+config:
+  kubernetes:
+    networkCni: "canal"
+    podCidr: "10.244.0.0/16"
+    serviceCidr: "10.96.0.0/12"
+    serviceDnsDomain: "cluster.local"
