@@ -46,7 +46,6 @@ jobs:
           draft: false
           prerelease: false
           release_name: Release ${{ steps.variables.outputs.version }}
-          tag_name: ${{ steps.variables.outputs.version }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - name: Upload linux artifact
