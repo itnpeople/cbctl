@@ -9,5 +9,16 @@
 *.swp
 .vscode
 
+# applications
 .config
 bin/
+**/kubeconfig/*.yaml
+**/kubeconfig/config
+**/ssh/*.pem
+**/output/*
+**/data/logs
+**/cb-operator
+**/meta_db/*
+**/output/
+credentials
+

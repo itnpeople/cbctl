@@ -1,5 +1,8 @@
 # cbctl
-> Cloud-Barista MCKS Command Line Interface
+
+* Cloud-Barista MCKS Command Line Interface
+* MCKS : Multi Cloud Kubernetes Service
+* https://github.com/cloud-barista/cb-mcks
 
 
 ## Quick Started
@@ -28,7 +31,27 @@ $ cbctl version
 https://github.com/itnpeople/cbctl/releases/download/v0.0.0/cbctl-windows-amd64.exe
 ```
 
-### Usage
+### Run the MCKS
+
+* start up
+
+```
+$ ./examples/lab/startup.sh
+```
+
+* Verify running
+```
+$ docker ps
+
+CONTAINER ID   IMAGE                                COMMAND                  CREATED      STATUS      PORTS                                        NAMES
+3aedcfdb6c8c   cloudbaristaorg/cb-mcks:latest       "/app/cb-mcks"           2 days ago   Up 2 days   0.0.0.0:1470->1470/tcp, 50254/tcp            cb-mcks
+3e8f6ad76539   cloudbaristaorg/cb-tumblebug:0.5.0   "/app/src/cb-tumbleb…"   2 days ago   Up 2 days   0.0.0.0:1323->1323/tcp, 50252/tcp            cb-tumblebug
+283b91eeb270   cloudbaristaorg/cb-spider:0.5.0      "/root/go/src/github…"   2 days ago   Up 2 days   2048/tcp, 0.0.0.0:1024->1024/tcp, 4096/tcp   cb-spider
+
+$ docker logs cb-mcks -f
+```
+
+### Create a Cluster
 
 * Initialize (cb-spider)
 
@@ -39,7 +62,7 @@ $ cbctl region create --csp aws --name region-aws-tokyo --region ap-northeast-1 
 $ cbctl connection create --csp aws --name config-aws-tokyo --region region-aws-tokyo --credential credential-aws
 ```
 
-* Create a Cluster 
+* Kubernetes cluster provisioning
 ```
 $ cbctl cluster create \
   --name "cb-cluster"\
@@ -51,10 +74,20 @@ $ cbctl cluster create \
   --worker-spec="t2.medium"
 ```
 
-
 ## User Guide
 
-### MCKS
+* Commands
+```
+$ cbctl
+$ cbctl cluster
+$ cbctl node
+$ cbctl driver
+$ cbctl credential
+$ cbctl region
+$ cbctl connection
+```
+
+### CB-MCKS
 
 * Cluster
 
