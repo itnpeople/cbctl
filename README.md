@@ -85,6 +85,7 @@ $ cbctl driver
 $ cbctl credential
 $ cbctl region
 $ cbctl connection
+$ cbctl plugin
 ```
 
 ### CB-MCKS
@@ -214,4 +215,51 @@ $ cbctl connection get --name config-aws-tokyo
 $ cbctl connection delete --name config-aws-tokyo
 ```
 
+### Plugins
 
+```
+$ cbctl plugin list
+$ cbctl <plugin name>
+```
+
+#### Using plugin examples
+
+* create a executable plugin (on PATH)
+> plugin name = cbctl-foo (prefix : cbctl)
+
+```
+$ cat > /usr/local/bin/cbctl-foo <<EOF
+#!/bin/bash
+echo "I am plugin foo"
+EOF
+
+$ chmod +x /usr/local/bin/cbctl-foo
+```
+
+* create a executable plugin (on plugin directory)
+> plugin name = foo
+
+```
+$ mkdir ${HOME}/.cbctl/plugins
+$ cat > ${HOME}/.cbctl/plugins/foo <<EOF
+#!/bin/bash
+echo "I am plugin foo"
+EOF
+
+$ chmod +x ${HOME}/.cbctl/plugins/foo
+```
+
+* plugin list
+
+```
+$ cbctl plugin list
+The following compatible plugins are available:
+
+/usr/local/bin/cbctl-foo
+```
+
+* execute plugin
+```
+$ cbctl foo
+I am plugin foo
+```

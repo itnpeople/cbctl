@@ -6,7 +6,6 @@ import (
 
 	"github.com/go-resty/resty/v2"
 	"github.com/spf13/cobra"
-	config "github.com/spf13/viper"
 
 	"github.com/itnpeople/cbctl/app"
 	"github.com/itnpeople/cbctl/utils"
@@ -14,6 +13,7 @@ import (
 
 // a struct to support command
 type RegionOptions struct {
+	app.ConfigContext
 	app.Output
 	RootUrl       string
 	CSP           string
@@ -25,15 +25,16 @@ type RegionOptions struct {
 }
 
 // returns initialized Options
-func NewRegionOptions(output app.Output) *RegionOptions {
+func NewRegionOptions(ctx app.ConfigContext, output app.Output) *RegionOptions {
 	return &RegionOptions{
-		Output: output,
+		ConfigContext: ctx,
+		Output:        output,
 	}
 }
 
 // completes all the required options
 func (o *RegionOptions) Complete(cmd *cobra.Command) error {
-	o.RootUrl = utils.NVL(o.RootUrl, config.GetStringMapString("urls")["spider"])
+	o.RootUrl = utils.NVL(o.RootUrl, o.ConfigContext.Urls.Spider)
 	if !strings.HasPrefix(o.RootUrl, "http://") && !strings.HasPrefix(o.RootUrl, "https://") {
 		return fmt.Errorf("Invalid request roo-url flag (%s)", o.RootUrl)
 	}
@@ -52,8 +53,8 @@ func (o *RegionOptions) Validate() error {
 }
 
 // returns a cobra command
-func NewCmdRegion(output app.Output) *cobra.Command {
-	o := NewRegionOptions(output)
+func NewCmdRegion(ctx app.ConfigContext, output app.Output) *cobra.Command {
+	o := NewRegionOptions(ctx, output)
 	cmds := &cobra.Command{
 		Use:   "region",
 		Short: "Cloud region",

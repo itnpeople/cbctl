@@ -6,7 +6,6 @@ import (
 
 	"github.com/go-resty/resty/v2"
 	"github.com/spf13/cobra"
-	config "github.com/spf13/viper"
 
 	"github.com/itnpeople/cbctl/app"
 	"github.com/itnpeople/cbctl/utils"
@@ -15,20 +14,22 @@ import (
 // a struct to support command
 type DriverOptions struct {
 	app.Output
+	app.ConfigContext
 	RootUrl string
 	CSP     string
 }
 
 // returns initialized Options
-func NewDriverOptions(output app.Output) *DriverOptions {
+func NewDriverOptions(ctx app.ConfigContext, output app.Output) *DriverOptions {
 	return &DriverOptions{
-		Output: output,
+		ConfigContext: ctx,
+		Output:        output,
 	}
 }
 
 // completes all the required options
 func (o *DriverOptions) Complete(cmd *cobra.Command) error {
-	o.RootUrl = utils.NVL(o.RootUrl, config.GetStringMapString("urls")["spider"])
+	o.RootUrl = utils.NVL(o.RootUrl, o.ConfigContext.Urls.Spider)
 	if !strings.HasPrefix(o.RootUrl, "http://") && !strings.HasPrefix(o.RootUrl, "https://") {
 		return fmt.Errorf("Invalid request roo-url flag (%s)", o.RootUrl)
 	}
@@ -44,8 +45,8 @@ func (o *DriverOptions) Validate() error {
 }
 
 // returns a cobra command
-func NewCmdDriver(output app.Output) *cobra.Command {
-	o := NewDriverOptions(output)
+func NewCmdDriver(ctx app.ConfigContext, output app.Output) *cobra.Command {
+	o := NewDriverOptions(ctx, output)
 	cmds := &cobra.Command{
 		Use:   "driver",
 		Short: "Cloud driver",

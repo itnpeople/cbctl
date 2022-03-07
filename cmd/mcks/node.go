@@ -15,6 +15,7 @@ import (
 // a struct to support command
 type NodeOptions struct {
 	app.Output
+	app.ConfigContext
 	RootUrl   string
 	Namespace string
 	Cluster   string
@@ -36,9 +37,9 @@ func NewNodeOptions(output app.Output) *NodeOptions {
 
 // completes all the required options
 func (o *NodeOptions) Complete(cmd *cobra.Command) error {
-	o.RootUrl = utils.NVL(o.RootUrl, config.GetStringMapString("urls")["mcks"])
+	o.RootUrl = utils.NVL(o.RootUrl, o.ConfigContext.Urls.MCKS)
 	if !strings.HasPrefix(o.RootUrl, "http://") && !strings.HasPrefix(o.RootUrl, "https://") {
-		return fmt.Errorf("Invalid request roo-url flag (%s)", o.RootUrl)
+		return fmt.Errorf("Invalid MCKS request-url flag (%s)", o.RootUrl)
 	}
 	o.Namespace = utils.NVL(o.Namespace, config.GetString("namespace"))
 	if o.Namespace == "" {

@@ -6,7 +6,6 @@ import (
 
 	"github.com/go-resty/resty/v2"
 	"github.com/spf13/cobra"
-	config "github.com/spf13/viper"
 
 	"github.com/itnpeople/cbctl/app"
 	"github.com/itnpeople/cbctl/utils"
@@ -14,6 +13,7 @@ import (
 
 // a struct to support command
 type CredentialOptions struct {
+	app.ConfigContext
 	app.Output
 	RootUrl        string
 	CSP            string
@@ -29,15 +29,16 @@ type CredentialOptions struct {
 }
 
 // returns initialized Options
-func NewCredentialOptions(output app.Output) *CredentialOptions {
+func NewCredentialOptions(ctx app.ConfigContext, output app.Output) *CredentialOptions {
 	return &CredentialOptions{
-		Output: output,
+		ConfigContext: ctx,
+		Output:        output,
 	}
 }
 
 // completes all the required options
 func (o *CredentialOptions) Complete(cmd *cobra.Command) error {
-	o.RootUrl = utils.NVL(o.RootUrl, config.GetStringMapString("urls")["spider"])
+	o.RootUrl = utils.NVL(o.RootUrl, o.ConfigContext.Urls.Spider)
 	if !strings.HasPrefix(o.RootUrl, "http://") && !strings.HasPrefix(o.RootUrl, "https://") {
 		return fmt.Errorf("Invalid request roo-url flag (%s)", o.RootUrl)
 	}
@@ -74,8 +75,8 @@ func (o *CredentialOptions) Validate() error {
 }
 
 // returns a cobra command
-func NewCmdCredential(output app.Output) *cobra.Command {
-	o := NewCredentialOptions(output)
+func NewCmdCredential(ctx app.ConfigContext, output app.Output) *cobra.Command {
+	o := NewCredentialOptions(ctx, output)
 	cmds := &cobra.Command{
 		Use:   "credential",
 		Short: "Cloud credential",

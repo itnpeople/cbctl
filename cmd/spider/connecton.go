@@ -6,7 +6,6 @@ import (
 
 	"github.com/go-resty/resty/v2"
 	"github.com/spf13/cobra"
-	config "github.com/spf13/viper"
 
 	"github.com/itnpeople/cbctl/app"
 	"github.com/itnpeople/cbctl/utils"
@@ -14,6 +13,7 @@ import (
 
 // a struct to support command
 type ConnectionOptions struct {
+	app.ConfigContext
 	app.Output
 	RootUrl    string
 	Name       string
@@ -23,15 +23,16 @@ type ConnectionOptions struct {
 }
 
 // returns initialized Options
-func NewConnectionOptions(output app.Output) *ConnectionOptions {
+func NewConnectionOptions(ctx app.ConfigContext, output app.Output) *ConnectionOptions {
 	return &ConnectionOptions{
-		Output: output,
+		ConfigContext: ctx,
+		Output:        output,
 	}
 }
 
 // completes all the required options
 func (o *ConnectionOptions) Complete(cmd *cobra.Command) error {
-	o.RootUrl = utils.NVL(o.RootUrl, config.GetStringMapString("urls")["spider"])
+	o.RootUrl = utils.NVL(o.RootUrl, o.ConfigContext.Urls.Spider)
 	if !strings.HasPrefix(o.RootUrl, "http://") && !strings.HasPrefix(o.RootUrl, "https://") {
 		return fmt.Errorf("Invalid request roo-url flag (%s)", o.RootUrl)
 	}
@@ -56,8 +57,8 @@ func (o *ConnectionOptions) Validate() error {
 }
 
 // returns a cobra command
-func NewCmdConnection(output app.Output) *cobra.Command {
-	o := NewConnectionOptions(output)
+func NewCmdConnection(ctx app.ConfigContext, output app.Output) *cobra.Command {
+	o := NewConnectionOptions(ctx, output)
 	cmds := &cobra.Command{
 		Use:   "connection",
 		Short: "Cloud connection info.",

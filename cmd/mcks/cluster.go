@@ -6,7 +6,6 @@ import (
 
 	"github.com/go-resty/resty/v2"
 	"github.com/spf13/cobra"
-	config "github.com/spf13/viper"
 	"k8s.io/client-go/tools/clientcmd"
 
 	"github.com/itnpeople/cbctl/app"
@@ -15,6 +14,7 @@ import (
 
 // a struct to support command
 type ClusterOptions struct {
+	app.ConfigContext
 	app.Output
 	RootUrl      string
 	Namespace    string
@@ -33,19 +33,20 @@ type ClusterOptions struct {
 }
 
 // returns initialized Options
-func NewClusterOptions(output app.Output) *ClusterOptions {
+func NewClusterOptions(ctx app.ConfigContext, output app.Output) *ClusterOptions {
 	return &ClusterOptions{
-		Output: output,
+		ConfigContext: ctx,
+		Output:        output,
 	}
 }
 
 // completes all the required options
 func (o *ClusterOptions) Complete(cmd *cobra.Command) error {
-	o.RootUrl = utils.NVL(o.RootUrl, config.GetStringMapString("urls")["mcks"])
+	o.RootUrl = utils.NVL(o.RootUrl, o.ConfigContext.Urls.MCKS)
 	if !strings.HasPrefix(o.RootUrl, "http://") && !strings.HasPrefix(o.RootUrl, "https://") {
 		return fmt.Errorf("Invalid request roo-url flag (%s)", o.RootUrl)
 	}
-	o.Namespace = utils.NVL(o.Namespace, config.GetString("namespace"))
+	o.Namespace = utils.NVL(o.Namespace, o.ConfigContext.Namespace)
 	if o.Namespace == "" {
 		return fmt.Errorf("Invalid namespace flag")
 	}
@@ -66,8 +67,8 @@ func (o *ClusterOptions) Validate() error {
 }
 
 // returns a cobra command
-func NewCmdCluster(output app.Output) *cobra.Command {
-	o := NewClusterOptions(output)
+func NewCmdCluster(ctx app.ConfigContext, output app.Output) *cobra.Command {
+	o := NewClusterOptions(ctx, output)
 
 	// root
 	cmds := &cobra.Command{

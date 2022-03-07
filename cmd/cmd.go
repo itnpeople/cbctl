@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"runtime"
 	"strings"
 	"syscall"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
+	//"github.com/spf13/viper"
 
 	"github.com/itnpeople/cbctl/app"
 	"github.com/itnpeople/cbctl/cmd/mcks"
@@ -34,15 +35,17 @@ func Execute() {
 }
 
 type CBCtlOptions struct {
-	PluginHandler PluginHandler
-	Arguments     []string
-	IOStreams     app.IOStreams
-	Output        string
+	app.ConfigContext
+	app.IOStreams
+	PluginHandler
+
+	Arguments []string
+	Output    string
 }
 
 func NewDefaultCBCtlCommand() *cobra.Command {
 	return NewDefaultCBCtlCommandWithArgs(CBCtlOptions{
-		PluginHandler: NewDefaultPluginHandler(pluginFilenamePrefix, pluginDirectory),
+		PluginHandler: NewDefaultPluginHandler(pluginFilenamePrefix, []string{filepath.Join(app.HomeDir(), ".cbctl", pluginDirectory)}),
 		Arguments:     os.Args,
 		IOStreams:     app.IOStreams{In: os.Stdin, Out: os.Stdout, ErrOut: os.Stderr},
 	})
@@ -91,27 +94,24 @@ func NewCBCtlCommand(o CBCtlOptions) *cobra.Command {
 	}
 
 	var cfgFile string
-	cmds.PersistentFlags().StringVar(&cfgFile, "config", ".config", "config file")
+	cmds.PersistentFlags().StringVar(&cfgFile, "config", "", "config file")
 	cmds.PersistentFlags().StringVarP(&o.Output, "output", "o", app.OUTPUT_YAML, "output (yaml or json)")
 
 	output := app.Output{Type: &o.Output, Stream: o.IOStreams.Out}
 	cmds.AddCommand(NewCmdVersion(o.IOStreams))
-	cmds.AddCommand(mcks.NewCmdCluster(output))
+	cmds.AddCommand(mcks.NewCmdCluster(o.ConfigContext, output))
 	cmds.AddCommand(mcks.NewCmdNodes(output))
-	cmds.AddCommand(spider.NewCmdDriver(output))
-	cmds.AddCommand(spider.NewCmdCredential(output))
-	cmds.AddCommand(spider.NewCmdRegion(output))
-	cmds.AddCommand(spider.NewCmdConnection(output))
+	cmds.AddCommand(spider.NewCmdDriver(o.ConfigContext, output))
+	cmds.AddCommand(spider.NewCmdCredential(o.ConfigContext, output))
+	cmds.AddCommand(spider.NewCmdRegion(o.ConfigContext, output))
+	cmds.AddCommand(spider.NewCmdConnection(o.ConfigContext, output))
 	cmds.AddCommand(NewCmdPlugin(o.IOStreams))
 
 	cobra.OnInitialize(func() {
-		viper.SetConfigName(cfgFile)
-		viper.SetConfigType("yaml")
-		viper.AddConfigPath(".")
-		viper.AutomaticEnv()
-
-		if err := viper.ReadInConfig(); err != nil {
-			fmt.Printf("Fail to using config file: %s (cause=%v)\n", viper.ConfigFileUsed(), err)
+		if ctx, err := app.GetCurrentContext(&cfgFile); err != nil {
+			fmt.Println(err.Error())
+		} else {
+			o.ConfigContext = *ctx
 		}
 	})
 
@@ -124,27 +124,33 @@ type PluginHandler interface {
 }
 
 type DefaultPluginHandler struct {
-	prefix           string
-	pluginsDirectory string
+	prefix             string
+	pluginsDirectories []string
 }
 
-func NewDefaultPluginHandler(prefix string, dir string) *DefaultPluginHandler {
+func NewDefaultPluginHandler(prefix string, dirs []string) *DefaultPluginHandler {
 	return &DefaultPluginHandler{
-		prefix:           prefix,
-		pluginsDirectory: dir,
+		prefix:             prefix,
+		pluginsDirectories: dirs,
 	}
 }
 
 func (h *DefaultPluginHandler) Lookup(filename string) (string, bool) {
 
+	found := false
 	path, err := exec.LookPath(fmt.Sprintf("%s-%s", h.prefix, filename))
 	if err != nil || len(path) == 0 {
-		path, err = exec.LookPath(fmt.Sprintf("%s/%s", h.pluginsDirectory, filename))
-		if err != nil && len(path) == 0 {
-			return "", false
+		for _, dir := range h.pluginsDirectories {
+			path, err = exec.LookPath(filepath.Join(dir, filename))
+			if err == nil && len(path) > 0 {
+				found = true
+				break
+			}
 		}
+	} else {
+		found = true
 	}
-	return path, true
+	return path, found
 
 }
 
@@ -179,7 +185,7 @@ func HandlePluginCommand(pluginHandler PluginHandler, cmdArgs []string) error {
 
 	if len(remainingArgs) == 0 {
 		// the length of cmdArgs is at least 1
-		return fmt.Errorf("flags cannot be placed before plugin name: %s", cmdArgs[0])
+		return fmt.Errorf("flags cannot be placed before plugin name: %s\n", cmdArgs[0])
 	}
 
 	foundBinaryPath := ""

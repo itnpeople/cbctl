@@ -33,8 +33,8 @@ func NewCmdPlugin(streams app.IOStreams) *cobra.Command {
 		Use:                   "plugin [flags]",
 		DisableFlagsInUseLine: true,
 		Short:                 "Provides utilities for interacting with plugins",
-		Run: func(cmd *cobra.Command, args []string) {
-			app.DefaultSubCommandRun(streams.ErrOut)(cmd, args)
+		Run: func(c *cobra.Command, args []string) {
+			c.Help()
 		},
 	}
 
@@ -101,11 +101,8 @@ func (o *PluginListOptions) Run() error {
 
 		if err != nil {
 			if _, ok := err.(*os.PathError); ok {
-				fmt.Fprintf(o.ErrOut, "Unable to read directory %q from your PATH: %v. Skipping...\n", dir, err)
 				continue
 			}
-
-			pluginErrors = append(pluginErrors, fmt.Errorf("error: unable to read directory %q in your PATH: %v", dir, err))
 			continue
 		}
 
