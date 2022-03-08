@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/ghodss/yaml"
@@ -46,4 +47,9 @@ func (self *Output) Write(json []byte) {
 			self.Stream.Write(json)
 		}
 	}
+}
+
+func (self *Output) WriteString(format string, params ...interface{}) {
+	line := fmt.Sprintf(format, params...)
+	self.Stream.WriteString(line)
 }

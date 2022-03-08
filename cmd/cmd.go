@@ -99,6 +99,7 @@ func NewCBCtlCommand(o CBCtlOptions) *cobra.Command {
 
 	output := app.Output{Type: &o.Output, Stream: o.IOStreams.Out}
 	cmds.AddCommand(NewCmdVersion(o.IOStreams))
+	cmds.AddCommand(NewCmdConfig(output))
 	cmds.AddCommand(mcks.NewCmdCluster(o.ConfigContext, output))
 	cmds.AddCommand(mcks.NewCmdNodes(output))
 	cmds.AddCommand(spider.NewCmdDriver(o.ConfigContext, output))
@@ -108,10 +109,10 @@ func NewCBCtlCommand(o CBCtlOptions) *cobra.Command {
 	cmds.AddCommand(NewCmdPlugin(o.IOStreams))
 
 	cobra.OnInitialize(func() {
-		if ctx, err := app.GetCurrentContext(&cfgFile); err != nil {
+		if err := app.OnConfigInitialize(cfgFile); err != nil {
 			fmt.Println(err.Error())
 		} else {
-			o.ConfigContext = *ctx
+			o.ConfigContext = *app.Config.GetCurrentContext()
 		}
 	})
 

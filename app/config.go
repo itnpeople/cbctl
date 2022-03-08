@@ -9,9 +9,10 @@ import (
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
+	"gopkg.in/yaml.v3"
 )
 
-type Config struct {
+type conf struct {
 	CurrentContext string                    `yaml:"current-context"`
 	Contexts       map[string]*ConfigContext `yaml:"contexts"`
 }
@@ -25,74 +26,91 @@ type ConfigContext struct {
 	} `yaml:"urls"`
 }
 
-func GetConfig(cfgFile *string) (*Config, error) {
-	dir := fmt.Sprintf("%s/.cbctl", HomeDir())
+var (
+	Config *conf
+)
+
+func (self *conf) WriteConfig() error {
+
+	if b, err := yaml.Marshal(self); err != nil {
+		return err
+	} else {
+		ioutil.WriteFile(viper.ConfigFileUsed(), b, os.ModePerm)
+	}
+	if err := viper.ReadInConfig(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func OnConfigInitialize(cfgFile string) error {
+
+	dir := filepath.Join(HomeDir(), ".cbctl")
 	viper.AddConfigPath(dir)
 	viper.AddConfigPath(".")
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 	viper.AutomaticEnv()
 
-	if *cfgFile != "" {
-		viper.SetConfigFile(*cfgFile)
+	if cfgFile != "" {
+		viper.SetConfigFile(cfgFile)
 	}
+
+	// set default
+	viper.SetDefault("current-context", "")
+	viper.SetDefault("contexts.local.namespace", "")
+	viper.SetDefault("contexts.local.urls", map[string]string{
+		"mcks":      "http://localhost:1470/mcks",
+		"spider":    "http://localhost:1024/spider",
+		"tumblebug": "http://localhost:1323/tumblebug",
+	})
 
 	// read a config file
 	if err := viper.ReadInConfig(); err != nil {
+		fmt.Println(err)
+		//return err
 
 		// the default config save to "${HOME}/.cbctl/config"
 		if _, err := os.Stat(dir); os.IsNotExist(err) {
 			os.MkdirAll(dir, os.ModePerm)
 		}
 		if _, err := os.Stat(filepath.Join(dir, "config")); os.IsNotExist(err) {
-			ioutil.WriteFile(filepath.Join(dir, "config"), []byte(`current-context: local
-contexts:
-  local:
-    namespace :
-    urls:
-      mcks: http://localhost:1470/mcks
-      spider: http://localhost:1024/spider
-      tumblebug: http://localhost:1323/tumblebug`), os.ModePerm)
+			ioutil.WriteFile(filepath.Join(dir, "config"), []byte{}, os.ModePerm)
 		}
-
-		if err = viper.ReadInConfig(); err != nil {
-			return nil, fmt.Errorf("Fail to using config file: %s (cause=%v)", viper.ConfigFileUsed(), err)
+		if err := viper.WriteConfig(); err != nil {
+			fmt.Println(err)
 		}
 	}
 
-	conf := &Config{}
-	if err := viper.Unmarshal(&conf,
+	// unmarshal
+	if err := viper.Unmarshal(&Config,
 		viper.DecoderConfigOption(func(decoderConfig *mapstructure.DecoderConfig) {
 			decoderConfig.TagName = "yaml"
 		})); err != nil {
-		return nil, fmt.Errorf("unable to decode into config struct, %v", err)
+		return fmt.Errorf("unable to decode into config struct, %v", err)
 	}
 
-	return conf, nil
+	// current-context
+	if Config.Contexts[Config.CurrentContext] == nil {
+		Config.CurrentContext = func() string {
+			if len(Config.Contexts) > 0 {
+				for k := range Config.Contexts {
+					return k
+				}
+			}
+			return ""
+		}()
+	}
+	if Config.CurrentContext == "" {
+		return fmt.Errorf("unable to find current context")
+	}
+
+	return nil
 
 }
 
-func GetCurrentContext(cfgFile *string) (*ConfigContext, error) {
-
-	if conf, err := GetConfig(cfgFile); err != nil {
-		return nil, err
-	} else {
-		if conf.Contexts[conf.CurrentContext] == nil {
-			conf.CurrentContext = func() string {
-				if len(conf.Contexts) > 0 {
-					for k := range conf.Contexts {
-						return k
-					}
-				}
-				return ""
-			}()
-		}
-		if conf.CurrentContext == "" {
-			return nil, fmt.Errorf("unable to find current context")
-		}
-
-		return conf.Contexts[conf.CurrentContext], nil
-	}
+func (self *conf) GetCurrentContext() *ConfigContext {
+	return self.Contexts[self.CurrentContext]
 }
 
 func HomeDir() string {

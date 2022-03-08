@@ -263,3 +263,33 @@ The following compatible plugins are available:
 $ cbctl foo
 I am plugin foo
 ```
+
+### Config
+
+```
+$ cbctl config
+```
+
+* Context
+```
+$ cbctl config add-context --name ctx1 \
+ --namespace default \
+ --url-mcks http://127.0.0.1:1470/mcks \
+ --url-spider http://127.0.0.1:1024/spider \
+ --url-tumblebug http://127.0.0.1:1323/tumblebug
+
+$ cbctl config list-context
+$ cbctl config get-context ctx1
+$ cbctl config delete-context ctx1
+```
+
+* Current context
+```
+$ cbctl config current-context
+$ cbctl config current-context ctx1
+$ cbctl config set-namespace namespace1
+```
+
+```
+$ cbctl config view
+```

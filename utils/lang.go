@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"reflect"
 	"strings"
 
 	"github.com/ghodss/yaml"
@@ -79,5 +80,22 @@ func ToFilenameBytes(filename string) ([]byte, error) {
 	}
 
 	return buf, err
+
+}
+
+func GetKeys(data map[string]interface{}) []interface{} {
+
+	var keys []interface{}
+
+	v := reflect.ValueOf(data)
+
+	if v.Kind() == reflect.Map {
+		for _, k := range v.MapKeys() {
+			keys = append(keys, k.Interface())
+		}
+
+	}
+
+	return keys
 
 }
