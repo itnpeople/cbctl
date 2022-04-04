@@ -14,24 +14,22 @@ import (
 // a struct to support command
 type DriverOptions struct {
 	app.Output
-	app.ConfigContext
 	RootUrl string
 	CSP     string
 }
 
 // returns initialized Options
-func NewDriverOptions(ctx app.ConfigContext, output app.Output) *DriverOptions {
+func NewDriverOptions(output app.Output) *DriverOptions {
 	return &DriverOptions{
-		ConfigContext: ctx,
-		Output:        output,
+		Output: output,
 	}
 }
 
 // completes all the required options
 func (o *DriverOptions) Complete(cmd *cobra.Command) error {
-	o.RootUrl = utils.NVL(o.RootUrl, o.ConfigContext.Urls.Spider)
+	o.RootUrl = utils.NVL(o.RootUrl, app.Config.GetCurrentContext().Urls.Spider)
 	if !strings.HasPrefix(o.RootUrl, "http://") && !strings.HasPrefix(o.RootUrl, "https://") {
-		return fmt.Errorf("Invalid request roo-url flag (%s)", o.RootUrl)
+		return fmt.Errorf("Invalid request root-url flag (%s)", o.RootUrl)
 	}
 	return nil
 }
@@ -45,8 +43,8 @@ func (o *DriverOptions) Validate() error {
 }
 
 // returns a cobra command
-func NewCmdDriver(ctx app.ConfigContext, output app.Output) *cobra.Command {
-	o := NewDriverOptions(ctx, output)
+func NewCmdDriver(output app.Output) *cobra.Command {
+	o := NewDriverOptions(output)
 	cmds := &cobra.Command{
 		Use:   "driver",
 		Short: "Cloud driver",

@@ -13,7 +13,6 @@ import (
 
 // a struct to support command
 type RegionOptions struct {
-	app.ConfigContext
 	app.Output
 	RootUrl       string
 	CSP           string
@@ -25,18 +24,17 @@ type RegionOptions struct {
 }
 
 // returns initialized Options
-func NewRegionOptions(ctx app.ConfigContext, output app.Output) *RegionOptions {
+func NewRegionOptions(output app.Output) *RegionOptions {
 	return &RegionOptions{
-		ConfigContext: ctx,
-		Output:        output,
+		Output: output,
 	}
 }
 
 // completes all the required options
 func (o *RegionOptions) Complete(cmd *cobra.Command) error {
-	o.RootUrl = utils.NVL(o.RootUrl, o.ConfigContext.Urls.Spider)
+	o.RootUrl = utils.NVL(o.RootUrl, app.Config.GetCurrentContext().Urls.Spider)
 	if !strings.HasPrefix(o.RootUrl, "http://") && !strings.HasPrefix(o.RootUrl, "https://") {
-		return fmt.Errorf("Invalid request roo-url flag (%s)", o.RootUrl)
+		return fmt.Errorf("Invalid request root-url flag (%s)", o.RootUrl)
 	}
 	return nil
 }
@@ -53,8 +51,8 @@ func (o *RegionOptions) Validate() error {
 }
 
 // returns a cobra command
-func NewCmdRegion(ctx app.ConfigContext, output app.Output) *cobra.Command {
-	o := NewRegionOptions(ctx, output)
+func NewCmdRegion(output app.Output) *cobra.Command {
+	o := NewRegionOptions(output)
 	cmds := &cobra.Command{
 		Use:   "region",
 		Short: "Cloud region",

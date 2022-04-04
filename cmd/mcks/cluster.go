@@ -14,7 +14,6 @@ import (
 
 // a struct to support command
 type ClusterOptions struct {
-	app.ConfigContext
 	app.Output
 	RootUrl      string
 	Namespace    string
@@ -33,20 +32,19 @@ type ClusterOptions struct {
 }
 
 // returns initialized Options
-func NewClusterOptions(ctx app.ConfigContext, output app.Output) *ClusterOptions {
+func NewClusterOptions(output app.Output) *ClusterOptions {
 	return &ClusterOptions{
-		ConfigContext: ctx,
-		Output:        output,
+		Output: output,
 	}
 }
 
 // completes all the required options
 func (o *ClusterOptions) Complete(cmd *cobra.Command) error {
-	o.RootUrl = utils.NVL(o.RootUrl, o.ConfigContext.Urls.MCKS)
+	o.RootUrl = utils.NVL(o.RootUrl, app.Config.GetCurrentContext().Urls.MCKS)
 	if !strings.HasPrefix(o.RootUrl, "http://") && !strings.HasPrefix(o.RootUrl, "https://") {
-		return fmt.Errorf("Invalid request roo-url flag (%s)", o.RootUrl)
+		return fmt.Errorf("Invalid request root-url flag (%s)", o.RootUrl)
 	}
-	o.Namespace = utils.NVL(o.Namespace, o.ConfigContext.Namespace)
+	o.Namespace = utils.NVL(o.Namespace, app.Config.GetCurrentContext().Namespace)
 	if o.Namespace == "" {
 		return fmt.Errorf("Invalid namespace flag")
 	}
@@ -67,8 +65,8 @@ func (o *ClusterOptions) Validate() error {
 }
 
 // returns a cobra command
-func NewCmdCluster(ctx app.ConfigContext, output app.Output) *cobra.Command {
-	o := NewClusterOptions(ctx, output)
+func NewCmdCluster(output app.Output) *cobra.Command {
+	o := NewClusterOptions(output)
 
 	// root
 	cmds := &cobra.Command{

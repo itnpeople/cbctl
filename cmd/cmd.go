@@ -35,7 +35,6 @@ func Execute() {
 }
 
 type CBCtlOptions struct {
-	app.ConfigContext
 	app.IOStreams
 	PluginHandler
 
@@ -100,19 +99,17 @@ func NewCBCtlCommand(o CBCtlOptions) *cobra.Command {
 	output := app.Output{Type: &o.Output, Stream: o.IOStreams.Out}
 	cmds.AddCommand(NewCmdVersion(o.IOStreams))
 	cmds.AddCommand(NewCmdConfig(output))
-	cmds.AddCommand(mcks.NewCmdCluster(o.ConfigContext, output))
+	cmds.AddCommand(mcks.NewCmdCluster(output))
 	cmds.AddCommand(mcks.NewCmdNodes(output))
-	cmds.AddCommand(spider.NewCmdDriver(o.ConfigContext, output))
-	cmds.AddCommand(spider.NewCmdCredential(o.ConfigContext, output))
-	cmds.AddCommand(spider.NewCmdRegion(o.ConfigContext, output))
-	cmds.AddCommand(spider.NewCmdConnection(o.ConfigContext, output))
+	cmds.AddCommand(spider.NewCmdDriver(output))
+	cmds.AddCommand(spider.NewCmdCredential(output))
+	cmds.AddCommand(spider.NewCmdRegion(output))
+	cmds.AddCommand(spider.NewCmdConnection(output))
 	cmds.AddCommand(NewCmdPlugin(o.IOStreams))
 
 	cobra.OnInitialize(func() {
 		if err := app.OnConfigInitialize(cfgFile); err != nil {
 			fmt.Println(err.Error())
-		} else {
-			o.ConfigContext = *app.Config.GetCurrentContext()
 		}
 	})
 

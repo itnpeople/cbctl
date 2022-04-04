@@ -13,7 +13,6 @@ import (
 
 // a struct to support command
 type CredentialOptions struct {
-	app.ConfigContext
 	app.Output
 	RootUrl        string
 	CSP            string
@@ -29,18 +28,17 @@ type CredentialOptions struct {
 }
 
 // returns initialized Options
-func NewCredentialOptions(ctx app.ConfigContext, output app.Output) *CredentialOptions {
+func NewCredentialOptions(output app.Output) *CredentialOptions {
 	return &CredentialOptions{
-		ConfigContext: ctx,
-		Output:        output,
+		Output: output,
 	}
 }
 
 // completes all the required options
 func (o *CredentialOptions) Complete(cmd *cobra.Command) error {
-	o.RootUrl = utils.NVL(o.RootUrl, o.ConfigContext.Urls.Spider)
+	o.RootUrl = utils.NVL(o.RootUrl, app.Config.GetCurrentContext().Urls.Spider)
 	if !strings.HasPrefix(o.RootUrl, "http://") && !strings.HasPrefix(o.RootUrl, "https://") {
-		return fmt.Errorf("Invalid request roo-url flag (%s)", o.RootUrl)
+		return fmt.Errorf("Invalid request root-url flag (%s)", o.RootUrl)
 	}
 	return nil
 }
@@ -75,8 +73,8 @@ func (o *CredentialOptions) Validate() error {
 }
 
 // returns a cobra command
-func NewCmdCredential(ctx app.ConfigContext, output app.Output) *cobra.Command {
-	o := NewCredentialOptions(ctx, output)
+func NewCmdCredential(output app.Output) *cobra.Command {
+	o := NewCredentialOptions(output)
 	cmds := &cobra.Command{
 		Use:   "credential",
 		Short: "Cloud credential",
