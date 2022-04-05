@@ -61,7 +61,7 @@ func NewCmdRegion(output app.Output) *cobra.Command {
 		},
 	}
 	cmds.PersistentFlags().StringVar(&o.RootUrl, "url", "", "spider root url (http://localhost:1024/spider)")
-	cmds.PersistentFlags().StringVar(&o.CSP, "csp", "", "cloud service provider (aws, gcp, azure, alibaba, tencent, ibm, openstack)")
+	cmds.PersistentFlags().StringVar(&o.CSP, "csp", "", "cloud service provider (aws, gcp, azure, alibaba, tencent, ibm, openstack, cloudit)")
 	cmds.PersistentFlags().StringVar(&o.Name, "name", "", "name of region")
 
 	// create

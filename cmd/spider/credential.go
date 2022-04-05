@@ -25,6 +25,11 @@ type CredentialOptions struct {
 	TenantId       string
 	SubscriptionId string
 	ApiKey         string
+	Endpoint       string
+	Username       string
+	Password       string
+	DomainName     string
+	AutoToken      string
 }
 
 // returns initialized Options
@@ -66,6 +71,16 @@ func (o *CredentialOptions) Validate() error {
 			return fmt.Errorf("Invalid credential flag (csp=%s, api-key=%s)", o.CSP, o.ApiKey)
 		}
 		break
+	case "openstack":
+		if o.Endpoint == "" || o.Username == "" || o.Password == "" || o.DomainName == "" || o.ProjectID == "" {
+			return fmt.Errorf("Invalid credential flag (csp=%s, endpoint=%s, username=%s, password=%s, domain=%s, project-id=%s)", o.CSP, o.Endpoint, o.Username, o.Password, o.DomainName, o.ProjectID)
+		}
+		break
+	case "cloudit":
+		if o.Endpoint == "" || o.Username == "" || o.Password == "" || o.AutoToken == "" || o.TenantId == "" {
+			return fmt.Errorf("Invalid credential flag (csp=%s, endpoint=%s, username=%s, password=%s, token=%s, tenent=%s)", o.CSP, o.Endpoint, o.Username, o.Password, o.AutoToken, o.TenantId)
+		}
+		break
 	default:
 		return fmt.Errorf("Not supported CSP (csp=%s)", o.CSP)
 	}
@@ -83,7 +98,7 @@ func NewCmdCredential(output app.Output) *cobra.Command {
 		},
 	}
 	cmds.PersistentFlags().StringVar(&o.RootUrl, "url", "", "spider root url (http://localhost:1024/spider)")
-	cmds.PersistentFlags().StringVar(&o.CSP, "csp", "", "cloud service provider (aws, gcp, azure, alibaba, tencent, ibm, openstack)")
+	cmds.PersistentFlags().StringVar(&o.CSP, "csp", "", "cloud service provider (aws, gcp, azure, alibaba, tencent, ibm, openstack, cloudit)")
 	cmds.PersistentFlags().StringVar(&o.Name, "name", "", "name of credential")
 
 	// create
@@ -111,11 +126,17 @@ func NewCmdCredential(output app.Output) *cobra.Command {
 	cmdC.Flags().StringVar(&o.ClientID, "secret-id", "", "key id (aws, azure, alibaba, tencent)")      // AWS, Azure, Alibaba, Tencet
 	cmdC.Flags().StringVar(&o.ClientSecret, "secret", "", "key secret (aws, azure, alibaba, tencent)") // AWS, Azure, Alibaba, Tencet
 	cmdC.Flags().StringVar(&o.SubscriptionId, "subscription-id", "", "Azure subscription id")          // Azure (additional)
-	cmdC.Flags().StringVar(&o.TenantId, "tenant", "", "Azure tenant id")                               // Azure (additional)
+	cmdC.Flags().StringVar(&o.TenantId, "tenant", "", "Tenant id")                                     // Azure, Cloudit (additional)
 	cmdC.Flags().StringVar(&o.ClientEmail, "client-email", "", "Google Cloud client email")            // GCP
-	cmdC.Flags().StringVar(&o.ProjectID, "project-id", "", "Google Cloud project id")                  // GCP
+	cmdC.Flags().StringVar(&o.ProjectID, "project-id", "", "Project id")                               // GCP, openstack
 	cmdC.Flags().StringVar(&o.PrivateKey, "private-key", "", "Google Cloud private-key")               // GCP
 	cmdC.Flags().StringVar(&o.ApiKey, "api-key", "", "IBM api-key")                                    // IBM
+	cmdC.Flags().StringVar(&o.Endpoint, "endpoint", "", "Identity Endpoint")                           // Openstack, Cloudit
+	cmdC.Flags().StringVar(&o.Username, "username", "", "Username")                                    // Openstack, Cloudit
+	cmdC.Flags().StringVar(&o.Password, "password", "", "Password")                                    // Openstack, Cloudit
+	cmdC.Flags().StringVar(&o.DomainName, "domain", "", "Domain Name")                                 // Openstack
+	cmdC.Flags().StringVar(&o.AutoToken, "token", "", "Auth Token")                                    // Cloudit
+
 	cmds.AddCommand(cmdC)
 
 	// list
@@ -183,13 +204,18 @@ const (
 "CredentialName"   : "{{ .Name }}",
 "ProviderName"     : "{{ .CSP | ToUpper }}",
 "KeyValueInfoList" : [
-	{"Key" : "ClientId",       "Value" : "{{ .ClientID }}"},
-	{"Key" : "ClientSecret",   "Value" : "{{ .ClientSecret }}"},
-	{"Key" : "ClientEmail",    "Value" : "{{ .ClientEmail }}"},
-	{"Key" : "ProjectID",      "Value" : "{{ .ProjectID }}"},
-	{"Key" : "PrivateKey",     "Value" : "{{ .PrivateKey }}"},
-	{"Key" : "TenantId",       "Value" : "{{ .TenantId }}"},
-	{"Key" : "SubscriptionId", "Value" : "{{ .SubscriptionId }}"},
-	{"Key" : "ApiKey",         "Value" : "{{ .ApiKey }}"}
+	{"Key" : "ClientId",         "Value" : "{{ .ClientID }}"},
+	{"Key" : "ClientSecret",     "Value" : "{{ .ClientSecret }}"},
+	{"Key" : "ClientEmail",      "Value" : "{{ .ClientEmail }}"},
+	{"Key" : "ProjectID",        "Value" : "{{ .ProjectID }}"},
+	{"Key" : "PrivateKey",       "Value" : "{{ .PrivateKey }}"},
+	{"Key" : "TenantId",         "Value" : "{{ .TenantId }}"},
+	{"Key" : "SubscriptionId",   "Value" : "{{ .SubscriptionId }}"},
+	{"Key" : "ApiKey",           "Value" : "{{ .ApiKey }}"},
+	{"Key" : "IdentityEndpoint", "Value" : "{{ .Endpoint }}"},
+	{"Key" : "Username",         "Value" : "{{ .Username }}"},
+	{"Key" : "Password",         "Value" : "{{ .Password }}"},
+	{"Key" : "DomainName",       "Value" : "{{ .DomainName }}"},
+	{"Key" : "AuthToken",        "Value" : "{{ .AutoToken }}"}
 ]}`
 )

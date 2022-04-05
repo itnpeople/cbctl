@@ -12,6 +12,7 @@ do
             tencent)    TENCENT_FILE=${VALUE} ;;
             openstack)  OPENSTACK_FILE=${VALUE} ;;
             ibm)        IBM_FILE=${VALUE} ;;
+            cloudit)    CLOUDIT_FILE=${VALUE} ;;
             *)   
     esac    
 
@@ -73,4 +74,15 @@ if [ "${OPENSTACK_FILE}" != "" ]; then
     echo "export OS_USER_DOMAIN_NAME=\"${OS_USER_DOMAIN_NAME}\""
     echo "export OS_PROJECT_ID=\"${OS_PROJECT_ID}\""
     echo "export OS_REGION_NAME=\"${OS_REGION_NAME}\""
+fi
+if [ "${CLOUDIT_FILE}" != "" ]; then 
+    #FILE="${HOME}/.ssh/cloudit-credential.sh"
+	source "${CLOUDIT_FILE}"
+    echo "export CLOUDIT_ENDPOINT=\"${CLOUDIT_ENDPOINT}\""
+    echo "export CLOUDIT_TOKEN=\"${CLOUDIT_TOKEN}\""
+    echo "export CLOUDIT_USERNAME=\"${CLOUDIT_USERNAME}\""
+    echo "export CLOUDIT_PASSWORD=\"${CLOUDIT_PASSWORD}\""
+    echo "export CLOUDIT_TENANT_ID=\"${CLOUDIT_TENANT_ID}\""
+    echo "export CLOUDIT_REGION=\"${CLOUDIT_REGION}\""
+    echo "export CLOUDIT_ZONE=\"${CLOUDIT_ZONE}\""
 fi

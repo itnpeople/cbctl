@@ -185,7 +185,8 @@ $ source ./examples/credentials.sh \
   azure="${HOME}/.azure/azure-credential-cloudbarista.json" \
   alibaba="${HOME}/.ssh/alibaba_accesskey.csv" \
   tencent="${HOME}/.tccli/default.credential" \
-  openstack="${HOME}/.ssh/openstack-openrc.sh"
+  openstack="${HOME}/.ssh/openstack-openrc.sh" \
+  cloudit="${HOME}/.ssh/cloudit-credential.sh"
 
 $ cbctl credential create --csp aws --name crdential-aws --secret-id "$AWS_SECRET_ID" --secret "$AWS_SECRET_KEY"
 $ cbctl credential create --csp gcp --name credential-gcp --client-email "$GCP_SA" --project-id "$GCP_PROJECT" --private-key "$GCP_PKEY"
@@ -193,6 +194,8 @@ $ cbctl credential create --csp azure --name credential-azure --secret-id "$AZUR
 $ cbctl credential create --csp alibaba --name credential-alibaba --secret-id "$ALIBABA_SECRET_ID" --secret "$ALIBABA_SECRET_KEY"
 $ cbctl credential create --csp tencent --name credential-tencent --secret-id "$TENCENT_SECRET_ID" --secret "$TENCENT_SECRET_KEY"
 $ cbctl credential create --csp ibm --name credential-ibm --api-key "$IBM_API_KEY"
+$ cbctl credential create --csp openstack --name credential-openstack --endpoint "$OS_AUTH_URL" --project-id "$OS_PROJECT_ID" --username "$OS_USERNAME" --password "$OS_PASSWORD" --domain "$OS_USER_DOMAIN_NAME"
+$ cbctl credential create --csp cloudit --name credential-cloudit --endpoint "$CLOUDIT_ENDPOINT" --username "$CLOUDIT_USERNAME" --password "$CLOUDIT_PASSWORD" --token "$CLOUDIT_TOKEN" --tenant "$CLOUDIT_TENANT_ID"
 
 $ cbctl credential list
 $ cbctl credential get --name credential-aws
@@ -293,3 +296,5 @@ $ cbctl config set-namespace namespace1
 ```
 $ cbctl config view
 ```
+
+## CPS
