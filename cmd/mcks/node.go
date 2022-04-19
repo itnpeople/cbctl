@@ -6,7 +6,6 @@ import (
 
 	"github.com/go-resty/resty/v2"
 	"github.com/spf13/cobra"
-	config "github.com/spf13/viper"
 
 	"github.com/itnpeople/cbctl/app"
 	"github.com/itnpeople/cbctl/utils"
@@ -15,7 +14,6 @@ import (
 // a struct to support command
 type NodeOptions struct {
 	app.Output
-	app.ConfigContext
 	RootUrl   string
 	Namespace string
 	Cluster   string
@@ -37,11 +35,11 @@ func NewNodeOptions(output app.Output) *NodeOptions {
 
 // completes all the required options
 func (o *NodeOptions) Complete(cmd *cobra.Command) error {
-	o.RootUrl = utils.NVL(o.RootUrl, o.ConfigContext.Urls.MCKS)
+	o.RootUrl = utils.NVL(o.RootUrl, app.Config.GetCurrentContext().Urls.MCKS)
 	if !strings.HasPrefix(o.RootUrl, "http://") && !strings.HasPrefix(o.RootUrl, "https://") {
 		return fmt.Errorf("Invalid MCKS request-url flag (%s)", o.RootUrl)
 	}
-	o.Namespace = utils.NVL(o.Namespace, config.GetString("namespace"))
+	o.Namespace = utils.NVL(o.Namespace, app.Config.GetCurrentContext().Namespace)
 	if o.Namespace == "" {
 		return fmt.Errorf("Invalid namespace flag")
 	}
