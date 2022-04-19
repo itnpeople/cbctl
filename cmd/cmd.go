@@ -15,6 +15,7 @@ import (
 	"github.com/itnpeople/cbctl/app"
 	"github.com/itnpeople/cbctl/cmd/mcks"
 	"github.com/itnpeople/cbctl/cmd/spider"
+	"github.com/itnpeople/cbctl/cmd/tumblebug"
 )
 
 const (
@@ -105,6 +106,7 @@ func NewCBCtlCommand(o CBCtlOptions) *cobra.Command {
 	cmds.AddCommand(spider.NewCmdCredential(output))
 	cmds.AddCommand(spider.NewCmdRegion(output))
 	cmds.AddCommand(spider.NewCmdConnection(output))
+	cmds.AddCommand(tumblebug.NewCmdMCIS(output))
 	cmds.AddCommand(NewCmdPlugin(o.IOStreams))
 
 	cobra.OnInitialize(func() {
