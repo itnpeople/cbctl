@@ -94,7 +94,7 @@ func NewCmdNodes(output app.Output) *cobra.Command {
 				if len(o.Filenames) > 0 {
 					out, err = utils.ToFilenameBytes(o.Filenames[0])
 				} else {
-					out, err = utils.ToTemplateBytes(tplCluster, o)
+					out, err = utils.ToTemplateBytes(tplNodes, o)
 				}
 				if err != nil {
 					return err
