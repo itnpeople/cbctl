@@ -12,7 +12,7 @@ import (
 )
 
 // a struct to support command
-type ConnectionOptions struct {
+type MCISOptions struct {
 	app.Output
 	RootUrl   string
 	Namespace string
@@ -21,14 +21,14 @@ type ConnectionOptions struct {
 }
 
 // returns initialized Options
-func NewConnectionOptions(output app.Output) *ConnectionOptions {
-	return &ConnectionOptions{
+func NewMCISOptions(output app.Output) *MCISOptions {
+	return &MCISOptions{
 		Output: output,
 	}
 }
 
 // completes all the required options
-func (o *ConnectionOptions) Complete(cmd *cobra.Command) error {
+func (o *MCISOptions) Complete(cmd *cobra.Command) error {
 	o.RootUrl = utils.NVL(o.RootUrl, app.Config.GetCurrentContext().Urls.Tumblebug)
 	if !strings.HasPrefix(o.RootUrl, "http://") && !strings.HasPrefix(o.RootUrl, "https://") {
 		return fmt.Errorf("Invalid Tumblebug ROOT URL (%s)", o.RootUrl)
@@ -42,7 +42,7 @@ func (o *ConnectionOptions) Complete(cmd *cobra.Command) error {
 }
 
 // validates the provided options
-func (o *ConnectionOptions) Validate(args []string) error {
+func (o *MCISOptions) Validate(args []string) error {
 	if len(args) > 0 {
 		o.Name = utils.NVL(o.Name, args[0])
 	}
@@ -54,7 +54,7 @@ func (o *ConnectionOptions) Validate(args []string) error {
 
 // returns a cobra command
 func NewCmdMCIS(output app.Output) *cobra.Command {
-	o := NewConnectionOptions(output)
+	o := NewMCISOptions(output)
 	cmds := &cobra.Command{
 		Use:   "mcis",
 		Short: "Cloud Infra.",
@@ -86,7 +86,7 @@ func NewCmdMCIS(output app.Output) *cobra.Command {
 	// get
 	cmds.AddCommand(&cobra.Command{
 		Use:   "get",
-		Short: "Get a MCISs.",
+		Short: "Get a MCIS.",
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(o.Complete(c))
 			app.ValidateError(o.Validate(args))
@@ -104,7 +104,7 @@ func NewCmdMCIS(output app.Output) *cobra.Command {
 	// delete
 	cmds.AddCommand(&cobra.Command{
 		Use:   "delete",
-		Short: "Delete a MCISs.",
+		Short: "Delete a MCIS.",
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(o.Complete(c))
 			app.ValidateError(o.Validate(args))

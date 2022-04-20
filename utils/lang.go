@@ -3,13 +3,13 @@ package utils
 import (
 	"bytes"
 	"encoding/json"
-	"html/template"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
 	"reflect"
 	"strings"
+	"text/template"
 
 	"github.com/ghodss/yaml"
 )

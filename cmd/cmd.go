@@ -107,6 +107,7 @@ func NewCBCtlCommand(o CBCtlOptions) *cobra.Command {
 	cmds.AddCommand(spider.NewCmdRegion(output))
 	cmds.AddCommand(spider.NewCmdConnection(output))
 	cmds.AddCommand(tumblebug.NewCmdMCIS(output))
+	cmds.AddCommand(tumblebug.NewCmdNamespace(output))
 	cmds.AddCommand(NewCmdPlugin(o.IOStreams))
 
 	cobra.OnInitialize(func() {

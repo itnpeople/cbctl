@@ -88,8 +88,8 @@ func NewCmdRegion(output app.Output) *cobra.Command {
 	}
 	cmdC.Flags().StringVar(&o.Region, "region", "", "region")
 	cmdC.Flags().StringVar(&o.Zone, "zone", "", "zone")
-	cmdC.Flags().StringVar(&o.Location, "location", "", "location")
-	cmdC.Flags().StringVar(&o.ResourceGroup, "resource-group", "", "resource group")
+	cmdC.Flags().StringVar(&o.Location, "location", "", "location (azure)")
+	cmdC.Flags().StringVar(&o.ResourceGroup, "resource-group", "", "resource group (azure)")
 	cmds.AddCommand(cmdC)
 
 	// list

@@ -188,7 +188,7 @@ $ source ./examples/credentials.sh \
   openstack="${HOME}/.ssh/openstack-openrc.sh" \
   cloudit="${HOME}/.ssh/cloudit-credential.sh"
 
-$ cbctl credential create --csp aws --name crdential-aws --secret-id "$AWS_SECRET_ID" --secret "$AWS_SECRET_KEY"
+$ cbctl credential create --csp aws --name credential-aws --secret-id "$AWS_SECRET_ID" --secret "$AWS_SECRET_KEY"
 $ cbctl credential create --csp gcp --name credential-gcp --client-email "$GCP_SA" --project-id "$GCP_PROJECT" --private-key "$GCP_PKEY"
 $ cbctl credential create --csp azure --name credential-azure --secret-id "$AZURE_CLIENT_ID" --secret "$AZURE_CLIENT_SECRET" --subscription "$AZURE_SUBSCRIPTION_ID" --tenant "$AZURE_TENANT_ID"
 $ cbctl credential create --csp alibaba --name credential-alibaba --secret-id "$ALIBABA_SECRET_ID" --secret "$ALIBABA_SECRET_KEY"
@@ -205,6 +205,12 @@ $ cbctl credential delete --name credential-aws
 * Region
 ```
 $ cbctl region create --csp aws --name region-aws-tokyo --region ap-northeast-1 --zone ap-northeast-1a 
+$ cbctl region create --csp gcp --name region-gcp-tokyo --region asia-northeast1 --zone asia-northeast1-a
+$ cbctl region create --csp azure --name region-azure-tokyo --location japaneast --resource-group cb-mcks
+$ cbctl region create --csp alibaba --name region-alibaba-tokyo --region ap-northeast-1 --zone ap-northeast-1a
+$ cbctl region create --csp tencent --name region-tencent-tokyo --region ap-tokyo --zone ap-tokyo-2
+$ cbctl region create --csp ibm --name region-ibm-tokyo --region jp-tok --zone jp-tok-1
+
 $ cbctl region list
 $ cbctl region get --name region-aws-tokyo
 $ cbctl region delete --name region-aws-tokyo
@@ -213,6 +219,12 @@ $ cbctl region delete --name region-aws-tokyo
 * Connection Info.
 ```
 $ cbctl connection create --csp aws --name config-aws-tokyo --region region-aws-tokyo --credential credential-aws
+$ cbctl connection create --csp gcp --name config-gcp-tokyo --region region-gcp-tokyo --credential credential-gcp
+$ cbctl connection create --csp azure --name config-azure-tokyo --region region-azure-tokyo --credential credential-azure
+$ cbctl connection create --csp alibaba --name config-alibaba-tokyo --region region-alibaba-tokyo --credential credential-alibaba
+$ cbctl connection create --csp tencent --name config-tencent-tokyo --region region-tencent-tokyo --credential credential-tencent
+$ cbctl connection create --csp ibm --name config-ibm-tokyo --region region-ibm-tokyo --credential credential-ibm
+
 $ cbctl connection list
 $ cbctl connection get --name config-aws-tokyo
 $ cbctl connection delete --name config-aws-tokyo

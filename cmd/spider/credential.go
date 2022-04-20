@@ -123,19 +123,19 @@ func NewCmdCredential(output app.Output) *cobra.Command {
 			}())
 		},
 	}
-	cmdC.Flags().StringVar(&o.ClientID, "secret-id", "", "key id (aws, azure, alibaba, tencent)")      // AWS, Azure, Alibaba, Tencet
-	cmdC.Flags().StringVar(&o.ClientSecret, "secret", "", "key secret (aws, azure, alibaba, tencent)") // AWS, Azure, Alibaba, Tencet
-	cmdC.Flags().StringVar(&o.SubscriptionId, "subscription-id", "", "Azure subscription id")          // Azure (additional)
-	cmdC.Flags().StringVar(&o.TenantId, "tenant", "", "Tenant id")                                     // Azure, Cloudit (additional)
-	cmdC.Flags().StringVar(&o.ClientEmail, "client-email", "", "Google Cloud client email")            // GCP
-	cmdC.Flags().StringVar(&o.ProjectID, "project-id", "", "Project id")                               // GCP, openstack
-	cmdC.Flags().StringVar(&o.PrivateKey, "private-key", "", "Google Cloud private-key")               // GCP
-	cmdC.Flags().StringVar(&o.ApiKey, "api-key", "", "IBM api-key")                                    // IBM
-	cmdC.Flags().StringVar(&o.Endpoint, "endpoint", "", "Identity Endpoint")                           // Openstack, Cloudit
-	cmdC.Flags().StringVar(&o.Username, "username", "", "Username")                                    // Openstack, Cloudit
-	cmdC.Flags().StringVar(&o.Password, "password", "", "Password")                                    // Openstack, Cloudit
-	cmdC.Flags().StringVar(&o.DomainName, "domain", "", "Domain Name")                                 // Openstack
-	cmdC.Flags().StringVar(&o.AutoToken, "token", "", "Auth Token")                                    // Cloudit
+	cmdC.Flags().StringVar(&o.ClientID, "secret-id", "", "Key id (aws, azure, alibaba, tencent)")      // AWS, Azure, Alibaba, Tencet
+	cmdC.Flags().StringVar(&o.ClientSecret, "secret", "", "Key secret (aws, azure, alibaba, tencent)") // AWS, Azure, Alibaba, Tencet
+	cmdC.Flags().StringVar(&o.SubscriptionId, "subscription", "", "Subscription id (azure)")           // Azure (additional)
+	cmdC.Flags().StringVar(&o.TenantId, "tenant", "", "Tenant id (azure, cloudit)")                    // Azure, Cloudit (additional)
+	cmdC.Flags().StringVar(&o.ClientEmail, "client-email", "", "Client email (gcp)")                   // GCP
+	cmdC.Flags().StringVar(&o.ProjectID, "project-id", "", "Project id (gcp, openstack)")              // GCP, openstack
+	cmdC.Flags().StringVar(&o.PrivateKey, "private-key", "", "Private-key (gcp)")                      // GCP
+	cmdC.Flags().StringVar(&o.ApiKey, "api-key", "", "Api-key (ibm)")                                  // IBM
+	cmdC.Flags().StringVar(&o.Endpoint, "endpoint", "", "Identity Endpoint (openstack, cloudit)")      // Openstack, Cloudit
+	cmdC.Flags().StringVar(&o.Username, "username", "", "Username (openstack, cloudit)")               // Openstack, Cloudit
+	cmdC.Flags().StringVar(&o.Password, "password", "", "Password (openstack, cloudit)")               // Openstack, Cloudit
+	cmdC.Flags().StringVar(&o.DomainName, "domain", "", "Domain Name (openstack)")                     // Openstack
+	cmdC.Flags().StringVar(&o.AutoToken, "token", "", "Auth Token (cloudit)")                          // Cloudit
 
 	cmds.AddCommand(cmdC)
 
