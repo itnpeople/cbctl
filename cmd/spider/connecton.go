@@ -1,7 +1,10 @@
 package spider
 
 import (
+	"bytes"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 	"strings"
 
 	"github.com/go-resty/resty/v2"
@@ -39,11 +42,11 @@ func (o *ConnectionOptions) Complete(cmd *cobra.Command) error {
 
 // validates the provided options
 func (o *ConnectionOptions) Validate() error {
-	if o.CSP == "" {
-		return fmt.Errorf("Invalid csp flag")
-	}
 	if o.Name == "" {
 		return fmt.Errorf("Invalid name flag")
+	}
+	if o.CSP == "" {
+		return fmt.Errorf("Invalid csp flag")
 	}
 	if o.Credential == "" {
 		return fmt.Errorf("Invalid credential flag")
@@ -146,6 +149,41 @@ func NewCmdConnection(output app.Output) *cobra.Command {
 				} else {
 					o.Output.Write(resp.Body())
 				}
+				return nil
+			}())
+		},
+	})
+
+	// test
+	cmds.AddCommand(&cobra.Command{
+		Use:   "test",
+		Short: "Test a cloud connection infos.",
+		Run: func(c *cobra.Command, args []string) {
+			app.ValidateError(o.Complete(c))
+			app.ValidateError(func() error {
+				if len(args) > 0 {
+					o.Name = utils.NVL(o.Name, args[0])
+				}
+				if o.Name == "" {
+					return fmt.Errorf("Invalid name flag")
+				}
+				// resty-go Get 인 경우 body를 혀용하지 않아서 "net/http" 모듈 사용
+				body := bytes.NewBufferString(fmt.Sprintf("{\"connectionName\": \"%s\"}", o.Name))
+				req, err := http.NewRequest("GET", fmt.Sprintf("%s/vmspec", o.RootUrl), body)
+				if err != nil {
+					return err
+				}
+				req.Header.Add("Content-Type", "application/json")
+				client := &http.Client{}
+				resp, err := client.Do(req)
+				if err != nil {
+					return err
+				}
+				defer resp.Body.Close()
+
+				bytes, _ := ioutil.ReadAll(resp.Body)
+				o.Output.Write(bytes)
+
 				return nil
 			}())
 		},
