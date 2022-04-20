@@ -41,17 +41,6 @@ func (o *MCISOptions) Complete(cmd *cobra.Command) error {
 	return nil
 }
 
-// validates the provided options
-func (o *MCISOptions) Validate(args []string) error {
-	if len(args) > 0 {
-		o.Name = utils.NVL(o.Name, args[0])
-	}
-	if o.Name == "" {
-		return fmt.Errorf("Invalid name")
-	}
-	return nil
-}
-
 // returns a cobra command
 func NewCmdMCIS(output app.Output) *cobra.Command {
 	o := NewMCISOptions(output)
@@ -87,9 +76,9 @@ func NewCmdMCIS(output app.Output) *cobra.Command {
 	cmds.AddCommand(&cobra.Command{
 		Use:   "get",
 		Short: "Get a MCIS.",
+		Args:  app.ValidCommandArgs(0, &o.Name),
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(o.Complete(c))
-			app.ValidateError(o.Validate(args))
 			app.ValidateError(func() error {
 				if resp, err := o.HTTP.Get(fmt.Sprintf("%s/ns/%s/mcis/%s", o.RootUrl, o.Namespace, o.Name)); err != nil {
 					return err
@@ -105,9 +94,9 @@ func NewCmdMCIS(output app.Output) *cobra.Command {
 	cmds.AddCommand(&cobra.Command{
 		Use:   "delete",
 		Short: "Delete a MCIS.",
+		Args:  app.ValidCommandArgs(0, &o.Name),
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(o.Complete(c))
-			app.ValidateError(o.Validate(args))
 			app.ValidateError(func() error {
 				if resp, err := o.HTTP.Delete(fmt.Sprintf("%s/ns/%s/mcis/%s?action=terminate", o.RootUrl, o.Namespace, o.Name)); err != nil {
 					return err
@@ -130,7 +119,7 @@ func NewCmdMCIS(output app.Output) *cobra.Command {
 		},
 	})
 
-	// delete
+	// clean
 	cmds.AddCommand(&cobra.Command{
 		Use:   "clean",
 		Short: "clean-up MCISs.",

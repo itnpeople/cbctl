@@ -136,12 +136,10 @@ func NewCmdNodes(output app.Output) *cobra.Command {
 	cmds.AddCommand(&cobra.Command{
 		Use:   "get",
 		Short: "Get a node",
+		Args:  app.ValidCommandArgs(0, &o.Name),
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(o.Complete(c))
 			app.ValidateError(func() error {
-				if len(args) > 0 {
-					o.Name = utils.NVL(o.Name, args[0])
-				}
 				if resp, err := resty.New().SetDisableWarn(true).R().Get(fmt.Sprintf("%s/ns/%s/clusters/%s/nodes/%s", o.RootUrl, o.Namespace, o.Cluster, o.Name)); err != nil {
 					return err
 				} else {
@@ -156,12 +154,10 @@ func NewCmdNodes(output app.Output) *cobra.Command {
 	cmds.AddCommand(&cobra.Command{
 		Use:   "delete",
 		Short: "Delete a cluster",
+		Args:  app.ValidCommandArgs(0, &o.Name),
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(o.Complete(c))
 			app.ValidateError(func() error {
-				if len(args) > 0 {
-					o.Name = utils.NVL(o.Name, args[0])
-				}
 				if resp, err := resty.New().SetDisableWarn(true).R().Delete(fmt.Sprintf("%s/ns/%s/clusters/%s/nodes/%s", o.RootUrl, o.Namespace, o.Cluster, o.Name)); err != nil {
 					return err
 				} else {
@@ -176,12 +172,10 @@ func NewCmdNodes(output app.Output) *cobra.Command {
 	cmds.AddCommand(&cobra.Command{
 		Use:   "get-key",
 		Short: "Get a private key",
+		Args:  app.ValidCommandArgs(0, &o.Name),
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(o.Complete(c))
 			app.ValidateError(func() error {
-				if len(args) > 0 {
-					o.Name = utils.NVL(o.Name, args[0])
-				}
 				res := &struct {
 					Credential string `json:"credential"`
 				}{}

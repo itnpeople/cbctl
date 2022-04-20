@@ -37,17 +37,6 @@ func (o *NamespaceOptions) Complete(cmd *cobra.Command) error {
 	return nil
 }
 
-// validates the provided options
-func (o *NamespaceOptions) Validate(args []string) error {
-	if len(args) > 0 {
-		o.Name = utils.NVL(o.Name, args[0])
-	}
-	if o.Name == "" {
-		return fmt.Errorf("Invalid name")
-	}
-	return nil
-}
-
 // returns a cobra command
 func NewCmdNamespace(output app.Output) *cobra.Command {
 	o := NewNamespaceOptions(output)
@@ -82,9 +71,9 @@ func NewCmdNamespace(output app.Output) *cobra.Command {
 	cmds.AddCommand(&cobra.Command{
 		Use:   "get",
 		Short: "Get a namespace.",
+		Args:  app.ValidCommandArgs(0, &o.Name),
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(o.Complete(c))
-			app.ValidateError(o.Validate(args))
 			app.ValidateError(func() error {
 				if resp, err := o.HTTP.Get(fmt.Sprintf("%s/ns/%s", o.RootUrl, o.Name)); err != nil {
 					return err
@@ -102,7 +91,6 @@ func NewCmdNamespace(output app.Output) *cobra.Command {
 		Short: "Create a namespace.",
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(o.Complete(c))
-			app.ValidateError(o.Validate(args))
 			app.ValidateError(func() error {
 				var body = fmt.Sprintf("{\"name\" : \"%s\", \"description\" : \"%s\"}", o.Name, o.Description)
 				if resp, err := o.HTTP.SetHeader("content-type", "application/json").SetBody(body).Post(fmt.Sprintf("%s/ns", o.RootUrl)); err != nil {
@@ -121,9 +109,9 @@ func NewCmdNamespace(output app.Output) *cobra.Command {
 	cmds.AddCommand(&cobra.Command{
 		Use:   "delete",
 		Short: "Delete a namespace.",
+		Args:  app.ValidCommandArgs(0, &o.Name),
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(o.Complete(c))
-			app.ValidateError(o.Validate(args))
 			app.ValidateError(func() error {
 				if resp, err := o.HTTP.Delete(fmt.Sprintf("%s/ns/%s", o.RootUrl, o.Name)); err != nil {
 					return err

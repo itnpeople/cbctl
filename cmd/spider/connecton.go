@@ -75,6 +75,7 @@ func NewCmdConnection(output app.Output) *cobra.Command {
 	cmdC := &cobra.Command{
 		Use:   "create",
 		Short: "Create a cloud connection info.",
+		Args:  app.ValidCommandArgs(0, &o.Name),
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(o.Complete(c))
 			app.ValidateError(o.Validate())
@@ -118,12 +119,10 @@ func NewCmdConnection(output app.Output) *cobra.Command {
 	cmds.AddCommand(&cobra.Command{
 		Use:   "get",
 		Short: "Get a cloud connection infos.",
+		Args:  app.ValidCommandArgs(0, &o.Name),
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(o.Complete(c))
 			app.ValidateError(func() error {
-				if len(args) > 0 {
-					o.Name = utils.NVL(o.Name, args[0])
-				}
 				if resp, err := resty.New().SetDisableWarn(true).R().Get(fmt.Sprintf("%s/connectionconfig/%s", o.RootUrl, o.Name)); err != nil {
 					return err
 				} else {
@@ -138,12 +137,10 @@ func NewCmdConnection(output app.Output) *cobra.Command {
 	cmds.AddCommand(&cobra.Command{
 		Use:   "delete",
 		Short: "Delete a cloud connection info.",
+		Args:  app.ValidCommandArgs(0, &o.Name),
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(o.Complete(c))
 			app.ValidateError(func() error {
-				if len(args) > 0 {
-					o.Name = utils.NVL(o.Name, args[0])
-				}
 				if resp, err := resty.New().SetDisableWarn(true).R().Delete(fmt.Sprintf("%s/connectionconfig/%s", o.RootUrl, o.Name)); err != nil {
 					return err
 				} else {
@@ -158,15 +155,10 @@ func NewCmdConnection(output app.Output) *cobra.Command {
 	cmds.AddCommand(&cobra.Command{
 		Use:   "test",
 		Short: "Test a cloud connection infos.",
+		Args:  app.ValidCommandArgs(0, &o.Name),
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(o.Complete(c))
 			app.ValidateError(func() error {
-				if len(args) > 0 {
-					o.Name = utils.NVL(o.Name, args[0])
-				}
-				if o.Name == "" {
-					return fmt.Errorf("Invalid name flag")
-				}
 				// resty-go Get 인 경우 body를 혀용하지 않아서 "net/http" 모듈 사용
 				body := bytes.NewBufferString(fmt.Sprintf("{\"connectionName\": \"%s\"}", o.Name))
 				req, err := http.NewRequest("GET", fmt.Sprintf("%s/vmspec", o.RootUrl), body)

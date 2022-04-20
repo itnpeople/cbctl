@@ -66,11 +66,11 @@ func NewCmdConfig(output app.Output) *cobra.Command {
 	cmdC := &cobra.Command{
 		Use:   "add-context",
 		Short: "Add a context",
+		Args:  app.ValidCommandArgs(0, &o.Name),
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(o.Complete(c))
 			app.ValidateError(o.Validate())
 			app.ValidateError(func() error {
-				fmt.Println(app.Config)
 				if _, ok := app.Config.Contexts[o.Name]; ok {
 					return fmt.Errorf("the context '%s' is alreaday exist", o.Name)
 				} else {
@@ -127,12 +127,10 @@ func NewCmdConfig(output app.Output) *cobra.Command {
 	cmds.AddCommand(&cobra.Command{
 		Use:   "get-context",
 		Short: "List all clusters",
+		Args:  app.ValidCommandArgs(0, &o.Name),
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(o.Complete(c))
 			app.ValidateError(func() error {
-				if len(args) > 0 {
-					o.Name = utils.NVL(o.Name, args[0])
-				}
 				if app.Config.Contexts[o.Name] != nil {
 					outYaml(app.Config.Contexts[o.Name], o.Output)
 				}
@@ -149,7 +147,7 @@ func NewCmdConfig(output app.Output) *cobra.Command {
 			app.ValidateError(o.Complete(c))
 			app.ValidateError(func() error {
 				if len(args) > 0 {
-					o.Name = utils.NVL(o.Name, args[0])
+					o.Name = utils.NVL(args[0], o.Name)
 					_, ok := app.Config.Contexts[o.Name]
 					if ok {
 						app.Config.CurrentContext = o.Name
@@ -186,12 +184,10 @@ func NewCmdConfig(output app.Output) *cobra.Command {
 	cmds.AddCommand(&cobra.Command{
 		Use:   "delete-context",
 		Short: "Delete a context",
+		Args:  app.ValidCommandArgs(0, &o.Name),
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(o.Complete(c))
 			app.ValidateError(func() error {
-				if len(args) > 0 {
-					o.Name = utils.NVL(o.Name, args[0])
-				}
 				conf := app.Config
 				if len(conf.Contexts) > 1 {
 					delete(conf.Contexts, o.Name)

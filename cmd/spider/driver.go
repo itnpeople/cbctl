@@ -76,9 +76,9 @@ func NewCmdDriver(output app.Output) *cobra.Command {
 	cmds.AddCommand(&cobra.Command{
 		Use:   "create",
 		Short: "Create a cloud driver",
+		Args:  app.ValidCommandArgs(0, &o.CSP),
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(o.Complete(c))
-			app.ValidateError(o.Validate())
 			app.ValidateError(func() error {
 				if out, err := utils.ToTemplateBytes(tplDriver, o); err != nil {
 					return err
@@ -99,6 +99,7 @@ func NewCmdDriver(output app.Output) *cobra.Command {
 	cmds.AddCommand(&cobra.Command{
 		Use:   "get",
 		Short: "Get a cloud driver",
+		Args:  app.ValidCommandArgs(0, &o.CSP),
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(o.Complete(c))
 			app.ValidateError(o.Validate())
@@ -117,6 +118,7 @@ func NewCmdDriver(output app.Output) *cobra.Command {
 	cmds.AddCommand(&cobra.Command{
 		Use:   "delete",
 		Short: "Delete a cloud driver",
+		Args:  app.ValidCommandArgs(0, &o.CSP),
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(o.Complete(c))
 			app.ValidateError(o.Validate())

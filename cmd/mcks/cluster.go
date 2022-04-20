@@ -81,7 +81,7 @@ func NewCmdCluster(output app.Output) *cobra.Command {
 
 	cmds.PersistentFlags().StringVar(&o.RootUrl, "url", "", "mcks root url (http://localhost:1470/mcks)")
 	cmds.PersistentFlags().StringVarP(&o.Namespace, "namespace", "n", "", "cloud-barista namespace for cluster list")
-	cmds.PersistentFlags().StringVar(&o.Name, "name", "cb-cluster", "cluster name")
+	cmds.PersistentFlags().StringVar(&o.Name, "name", "", "cluster name")
 
 	// create
 	cmdC := &cobra.Command{
@@ -141,12 +141,10 @@ func NewCmdCluster(output app.Output) *cobra.Command {
 	cmds.AddCommand(&cobra.Command{
 		Use:   "get",
 		Short: "Get a cluster",
+		Args:  app.ValidCommandArgs(0, &o.Name),
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(o.Complete(c))
 			app.ValidateError(func() error {
-				if len(args) > 0 {
-					o.Name = utils.NVL(o.Name, args[0])
-				}
 				if resp, err := resty.New().SetDisableWarn(true).R().Get(fmt.Sprintf("%s/ns/%s/clusters/%s", o.RootUrl, o.Namespace, o.Name)); err != nil {
 					return err
 				} else {
@@ -161,6 +159,7 @@ func NewCmdCluster(output app.Output) *cobra.Command {
 	cmds.AddCommand(&cobra.Command{
 		Use:   "delete",
 		Short: "Delete a cluster",
+		Args:  app.ValidCommandArgs(0, &o.Name),
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(o.Complete(c))
 			app.ValidateError(func() error {
@@ -180,6 +179,7 @@ func NewCmdCluster(output app.Output) *cobra.Command {
 	cmds.AddCommand(&cobra.Command{
 		Use:   "update-kubeconfig",
 		Short: "Update a kubeconfig",
+		Args:  app.ValidCommandArgs(0, &o.Name),
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(o.Complete(c))
 			app.ValidateError(func() error {

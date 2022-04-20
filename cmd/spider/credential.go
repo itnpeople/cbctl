@@ -105,6 +105,7 @@ func NewCmdCredential(output app.Output) *cobra.Command {
 	cmdC := &cobra.Command{
 		Use:   "create",
 		Short: "Create a cloud credential",
+		Args:  app.ValidCommandArgs(0, &o.Name),
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(o.Complete(c))
 			app.ValidateError(o.Validate())
@@ -160,12 +161,10 @@ func NewCmdCredential(output app.Output) *cobra.Command {
 	cmds.AddCommand(&cobra.Command{
 		Use:   "get",
 		Short: "Get a cloud credential",
+		Args:  app.ValidCommandArgs(0, &o.Name),
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(o.Complete(c))
 			app.ValidateError(func() error {
-				if len(args) > 0 {
-					o.Name = utils.NVL(o.Name, args[0])
-				}
 				if resp, err := resty.New().SetDisableWarn(true).R().Get(fmt.Sprintf("%s/credential/%s", o.RootUrl, o.Name)); err != nil {
 					return err
 				} else {
@@ -180,12 +179,10 @@ func NewCmdCredential(output app.Output) *cobra.Command {
 	cmds.AddCommand(&cobra.Command{
 		Use:   "delete",
 		Short: "Delete a cloud credential",
+		Args:  app.ValidCommandArgs(0, &o.Name),
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(o.Complete(c))
 			app.ValidateError(func() error {
-				if len(args) > 0 {
-					o.Name = utils.NVL(o.Name, args[0])
-				}
 				if resp, err := resty.New().SetDisableWarn(true).R().Delete(fmt.Sprintf("%s/credential/%s", o.RootUrl, o.Name)); err != nil {
 					return err
 				} else {
