@@ -18,6 +18,7 @@ type conf struct {
 }
 
 type ConfigContext struct {
+	Name      string `yaml:"name"`
 	Namespace string `yaml:"namespace"`
 	Urls      struct {
 		MCKS      string `yaml:"mcks"`
@@ -58,6 +59,7 @@ func OnConfigInitialize(cfgFile string) error {
 
 	// set default
 	viper.SetDefault("current-context", "")
+	viper.SetDefault("contexts.local.name", "local")
 	viper.SetDefault("contexts.local.namespace", "")
 	viper.SetDefault("contexts.local.urls", map[string]string{
 		"mcks":      "http://localhost:1470/mcks",

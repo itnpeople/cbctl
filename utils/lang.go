@@ -3,15 +3,9 @@ package utils
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
-	"net/http"
-	"net/url"
-	"os"
 	"reflect"
 	"strings"
 	"text/template"
-
-	"github.com/ghodss/yaml"
 )
 
 // NVL is null value logic
@@ -52,36 +46,36 @@ func ToTemplateBytes(tpl string, todo interface{}) ([]byte, error) {
 
 }
 
-func ToFilenameBytes(filename string) ([]byte, error) {
+//func ToFilenameBytes(filename string) ([]byte, error) {
 
-	var buf []byte
-	var err error
-	switch {
-	case filename == "-":
-		buf, err = ioutil.ReadAll(os.Stdin)
-	case strings.Index(filename, "http://") == 0 || strings.Index(filename, "https://") == 0:
-		if _, err = url.Parse(filename); err == nil {
-			if resp, err := http.Get(filename); err == nil {
-				defer resp.Body.Close()
-				buf, err = ioutil.ReadAll(resp.Body)
-			}
-		}
-	default:
-		buf, err = ioutil.ReadFile(filename)
-	}
+//	var buf []byte
+//	var err error
+//	switch {
+//	case filename == "-":
+//		buf, err = ioutil.ReadAll(os.Stdin)
+//	case strings.Index(filename, "http://") == 0 || strings.Index(filename, "https://") == 0:
+//		if _, err = url.Parse(filename); err == nil {
+//			if resp, err := http.Get(filename); err == nil {
+//				defer resp.Body.Close()
+//				buf, err = ioutil.ReadAll(resp.Body)
+//			}
+//		}
+//	default:
+//		buf, err = ioutil.ReadFile(filename)
+//	}
 
-	if err != nil {
-		return nil, err
-	}
+//	if err != nil {
+//		return nil, err
+//	}
 
-	//var body interface{}
-	if buf, err = yaml.YAMLToJSON(buf); err != nil {
-		return nil, err
-	}
+//	//var body interface{}
+//	if buf, err = yaml.YAMLToJSON(buf); err != nil {
+//		return nil, err
+//	}
 
-	return buf, err
+//	return buf, err
 
-}
+//}
 
 func GetKeys(data map[string]interface{}) []interface{} {
 

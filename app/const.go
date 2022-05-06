@@ -19,6 +19,47 @@ var (
 	BuildTime    string = ""
 )
 
+type IOptions interface {
+	GetFilename() string
+}
+
+type Options struct {
+	OutStream  *os.File // output stream
+	ConfigFile string   // config file
+	Output     string   // output format (json/yaml)
+	Filename   string   // file
+	Namespace  string   // cloud-barista namespace
+	Name       string   // object name
+}
+
+func (o *Options) GetFilename() string {
+	return o.Filename
+}
+
+func (o *Options) Println(format string, params ...interface{}) {
+	msg := fmt.Sprintf(format+"\n", params...)
+	if o.OutStream != nil {
+		o.OutStream.WriteString(msg)
+	} else {
+		os.Stdout.WriteString(msg)
+	}
+}
+func (o *Options) PrintlnError(err error) {
+	o.Println("%+v\n", err)
+}
+
+func (o *Options) WriteBody(json []byte) {
+	if o.Output == OUTPUT_JSON {
+		o.OutStream.Write(utils.ToPrettyJSON(json))
+	} else {
+		if d, err := yaml.JSONToYAML(json); err == nil {
+			o.OutStream.Write(d)
+		} else {
+			o.OutStream.Write(json)
+		}
+	}
+}
+
 type IOStreams struct {
 	In     *os.File
 	Out    *os.File

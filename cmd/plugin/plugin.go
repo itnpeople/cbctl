@@ -1,4 +1,4 @@
-package cmd
+package plugin
 
 import (
 	"bytes"
@@ -14,79 +14,49 @@ import (
 	"github.com/itnpeople/cbctl/app"
 )
 
+const (
+	PluginFilenamePrefix = "cbctl"
+	PluginDirectory      = "plugins"
+)
+
 // a struct to support command
 type PluginOptions struct {
-	app.IOStreams
-}
-
-// returns initialized Options
-func newPluginOptions(ioStreams app.IOStreams) *PluginOptions {
-	return &PluginOptions{
-		IOStreams: ioStreams,
-	}
-}
-
-// returns a cobra command
-func NewCmdPlugin(streams app.IOStreams) *cobra.Command {
-	o := NewVersionOptions(streams)
-	cmd := &cobra.Command{
-		Use:                   "plugin [flags]",
-		DisableFlagsInUseLine: true,
-		Short:                 "Provides utilities for interacting with plugins",
-		Run: func(c *cobra.Command, args []string) {
-			c.Help()
-		},
-	}
-
-	cmd.AddCommand(NewCmdPluginList(o.IOStreams))
-	return cmd
-}
-
-// a struct to support command
-type PluginListOptions struct {
-	app.IOStreams
-	PluginPaths []string
-	NameOnly    bool
-	Verifier    PathVerifier
-}
-
-// returns initialized Options
-func NewPluginListOptions(ioStreams app.IOStreams) *PluginListOptions {
-	return &PluginListOptions{
-		IOStreams: ioStreams,
-	}
+	*app.Options
+	PluginPaths          []string
+	NameOnly             bool
+	Verifier             PathVerifier
+	pluginFilenamePrefix string
+	pluginDirectory      string
 }
 
 // returns a cobra command
-func NewCmdPluginList(ioStreams app.IOStreams) *cobra.Command {
+func NewCommandPlugin(options *app.Options) *cobra.Command {
 
-	o := NewPluginListOptions(ioStreams)
+	o := &PluginOptions{
+		Options:              options,
+		pluginFilenamePrefix: PluginFilenamePrefix,
+		pluginDirectory:      PluginDirectory,
+	}
 
-	cmd := &cobra.Command{
-		Use:   "list",
+	o.PluginPaths = filepath.SplitList(os.Getenv("PATH"))
+	o.PluginPaths = append(o.PluginPaths, fmt.Sprintf("./%s", o.pluginDirectory))
+
+	return &cobra.Command{
+		Use:   "plugin",
 		Short: "List all visible plugin executables on a user's PATH",
 		Run: func(cmd *cobra.Command, args []string) {
-			app.ValidateError(o.Complete(cmd))
-			app.ValidateError(o.Run())
+			o.Verifier = &CommandOverrideVerifier{
+				root:        cmd.Root(),
+				seenPlugins: make(map[string]string),
+			}
+			o.PluginPaths = filepath.SplitList(os.Getenv("PATH"))
+			o.PluginPaths = append(o.PluginPaths, fmt.Sprintf("./%s", o.pluginDirectory))
+			app.ValidateError(cmd, o.Run())
 		},
 	}
-
-	cmd.Flags().BoolVar(&o.NameOnly, "name-only", o.NameOnly, "If true, display only the binary name of each plugin, rather than its full path")
-	return cmd
 }
 
-// completes all the required options
-func (o *PluginListOptions) Complete(cmd *cobra.Command) error {
-	o.Verifier = &CommandOverrideVerifier{
-		root:        cmd.Root(),
-		seenPlugins: make(map[string]string),
-	}
-	o.PluginPaths = filepath.SplitList(os.Getenv("PATH"))
-	o.PluginPaths = append(o.PluginPaths, fmt.Sprintf("./%s", pluginDirectory))
-	return nil
-}
-
-func (o *PluginListOptions) Run() error {
+func (o *PluginOptions) Run() error {
 	pluginsFound := false
 	isFirstFile := true
 	pluginErrors := []error{}
@@ -110,12 +80,12 @@ func (o *PluginListOptions) Run() error {
 			if f.IsDir() {
 				continue
 			}
-			if dir != "./"+pluginDirectory && !strings.HasPrefix(f.Name(), pluginFilenamePrefix+"-") {
+			if dir != "./"+o.pluginDirectory && !strings.HasPrefix(f.Name(), o.pluginFilenamePrefix+"-") {
 				continue
 			}
 
 			if isFirstFile {
-				fmt.Fprintf(o.Out, "The following compatible plugins are available:\n\n")
+				o.Println("The following compatible plugins are available")
 				pluginsFound = true
 				isFirstFile = false
 			}
@@ -125,10 +95,10 @@ func (o *PluginListOptions) Run() error {
 				pluginPath = filepath.Join(dir, pluginPath)
 			}
 
-			fmt.Fprintf(o.Out, "%s\n", pluginPath)
+			o.Println(pluginPath)
 			if errs := o.Verifier.Verify(filepath.Join(dir, f.Name())); len(errs) != 0 {
 				for _, err := range errs {
-					fmt.Fprintf(o.ErrOut, "  - %s\n", err)
+					o.PrintlnError(err)
 					pluginWarnings++
 				}
 			}
@@ -136,7 +106,7 @@ func (o *PluginListOptions) Run() error {
 	}
 
 	if !pluginsFound {
-		pluginErrors = append(pluginErrors, fmt.Errorf("error: unable to find any %s plugins in your PATH", pluginFilenamePrefix))
+		pluginErrors = append(pluginErrors, fmt.Errorf("error: unable to find any %s plugins in your PATH", o.pluginFilenamePrefix))
 	}
 
 	if pluginWarnings > 0 {
@@ -157,11 +127,9 @@ func (o *PluginListOptions) Run() error {
 	return nil
 }
 
-// receives a path and determines if it is valid or not
 type PathVerifier interface {
 	Verify(path string) []error
 }
-
 type CommandOverrideVerifier struct {
 	root        *cobra.Command
 	seenPlugins map[string]string
@@ -186,7 +154,7 @@ func (v *CommandOverrideVerifier) Verify(path string) []error {
 	errors := []error{}
 
 	if isExec, err := isExecutable(path); err == nil && !isExec {
-		errors = append(errors, fmt.Errorf("warning: %s identified as a %s plugin, but it is not executable", pluginFilenamePrefix, path))
+		errors = append(errors, fmt.Errorf("warning: identified as a %s plugin, but it is not executable", path))
 	} else if err != nil {
 		errors = append(errors, fmt.Errorf("error: unable to identify %s as an executable file: %v", path, err))
 	}
