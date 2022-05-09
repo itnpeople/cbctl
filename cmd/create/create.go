@@ -31,6 +31,9 @@ func (o *CreateClusterOptions) Validate() error {
 	if o.Namespace == "" {
 		return fmt.Errorf("Namespace is required.")
 	}
+	if o.Filename == "" && o.Name == "" {
+		return fmt.Errorf("Name is required.")
+	}
 	return nil
 }
 
@@ -88,6 +91,9 @@ func (o *CreateNodeOptions) Validate() error {
 	if o.clusterName == "" {
 		return fmt.Errorf("Cluster is required.")
 	}
+	if o.Filename == "" && o.Name == "" {
+		return fmt.Errorf("Name is required.")
+	}
 	return nil
 }
 
@@ -128,8 +134,10 @@ func NewCommandCreate(options *app.Options) *cobra.Command {
 
 	// cbctl create cluster
 	cmdC := &cobra.Command{
-		Use:   "cluster",
-		Short: "Create a cluster",
+		Use:                   "cluster (NAME | --name NAME | -f FILENAME) [options]",
+		Short:                 "Create a cluster",
+		DisableFlagsInUseLine: true,
+		Args:                  app.BindCommandArgs(&oCluster.Name),
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(c, oCluster.Validate())
 			app.ValidateError(c, oCluster.Run())
@@ -149,8 +157,9 @@ func NewCommandCreate(options *app.Options) *cobra.Command {
 
 	// cbctl create node
 	cmdN := &cobra.Command{
-		Use:   "node",
-		Short: "Add nodes",
+		Use:                   "node --cluster CLUSTER_NAME [options]",
+		Short:                 "Add nodes",
+		DisableFlagsInUseLine: true,
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(c, oNode.Validate())
 			app.ValidateError(c, oNode.Run())

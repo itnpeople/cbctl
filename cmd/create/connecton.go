@@ -25,22 +25,25 @@ func NewCommandConnection(options *app.Options) *cobra.Command {
 
 	// create
 	cmd := &cobra.Command{
-		Use:   "connection",
-		Short: "Create a cloud connection info.",
-		Args:  app.BindCommandArgs(&o.Name),
+		Use:                   "connection (NAME | --name NAME | -f FILENAME) [options]",
+		Short:                 "Create a cloud connection info.",
+		Args:                  app.BindCommandArgs(&o.Name),
+		DisableFlagsInUseLine: true,
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(c, func() error {
-				if o.Name == "" {
-					return fmt.Errorf("Name is required.")
-				}
-				if o.CSP == "" {
-					return fmt.Errorf("CSP is required.")
-				}
-				if o.Credential == "" {
-					return fmt.Errorf("Credential name is required.")
-				}
-				if o.Region == "" {
-					return fmt.Errorf("Region name is required.")
+				if o.Filename == "" {
+					if o.Name == "" {
+						return fmt.Errorf("Name is required.")
+					}
+					if o.CSP == "" {
+						return fmt.Errorf("CSP is required.")
+					}
+					if o.Credential == "" {
+						return fmt.Errorf("Credential name is required.")
+					}
+					if o.Region == "" {
+						return fmt.Errorf("Region name is required.")
+					}
 				}
 				if out, err := app.GetBody(o, `{
 					"ConfigName"     : "{{ .Name }}",

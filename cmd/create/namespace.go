@@ -22,10 +22,15 @@ func NewCommandNamespace(options *app.Options) *cobra.Command {
 	}
 
 	cmd := &cobra.Command{
-		Use:   "create",
-		Short: "Create a namespace.",
+		Use:                   "namespace (NAME | --name NAME | -f FILENAME) [options]",
+		Short:                 "Create a namespace.",
+		Args:                  app.BindCommandArgs(&o.Name),
+		DisableFlagsInUseLine: true,
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(c, func() error {
+				if o.Filename == "" && o.Name == "" {
+					return fmt.Errorf("Name is required.")
+				}
 				if out, err := app.GetBody(o, `{
 					"name"        : "{{NAME}}",
 					"description" : "{{Description}}"

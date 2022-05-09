@@ -35,6 +35,11 @@ func (o *CredentialOptions) Validate() error {
 	if o.Namespace == "" {
 		return fmt.Errorf("Namespace is required.")
 	}
+
+	if o.Filename != "" {
+		return nil
+	}
+
 	if o.Name == "" {
 		return fmt.Errorf("Name is required.")
 	}
@@ -83,7 +88,7 @@ func NewCommandCredential(options *app.Options) *cobra.Command {
 
 	// create
 	cmd := &cobra.Command{
-		Use:                   "credential [name]",
+		Use:                   "credential (NAME | --name NAME | -f FILENAME) [options]",
 		Short:                 "Create a cloud credential",
 		Args:                  app.BindCommandArgs(&o.Name),
 		DisableFlagsInUseLine: true,

@@ -1,45 +1,37 @@
 # cbctl
 
 * Cloud-Barista MCKS Command Line Interface
-* MCKS : Multi Cloud Kubernetes Service
-* https://github.com/cloud-barista/cb-mcks
+* [MCKS : Multi Cloud Kubernetes Service](https://github.com/cloud-barista/cb-mcks)
 
 
 ## Quick Started
 
-### Installation
+* Installation
 
-* MacOS
 ```
+### MacOS
 $ curl -LO "https://github.com/itnpeople/cbctl/releases/download/$(curl -s https://api.github.com/repos/itnpeople/cbctl/releases/latest | grep tag_name | sed -E 's/.*"([^"]+)".*/\1/')/cbctl-darwin-amd64"
 $ mv cbctl-darwin-amd64 /usr/local/bin/cbctl
 $ chmod +x /usr/local/bin/cbctl
 $ cbctl version
-```
 
-* Linux
-```
+###Linux
 $ curl -LO "https://github.com/itnpeople/cbctl/releases/download/$(curl -s https://api.github.com/repos/itnpeople/cbctl/releases/latest | grep tag_name | sed -E 's/.*"([^"]+)".*/\1/')/cbctl-linux-amd64"
 $ mv cbctl-linux-amd64 /usr/local/bin/cbctl
 $ chmod +x /usr/local/bin/cbctl
 $ cbctl version
-```
 
-* Windows
-
-```
+### Windows
 https://github.com/itnpeople/cbctl/releases/download/v0.0.0/cbctl-windows-amd64.exe
 ```
 
-### Start-up the MCKS
-
-* start up
+* start up the MCKS
 
 ```
 $ ./examples/lab/startup.sh
 ```
 
-* Verify running
+* verify running
 ```
 $ docker ps
 
@@ -51,9 +43,7 @@ CONTAINER ID   IMAGE                                COMMAND                  CRE
 $ docker logs cb-mcks -f
 ```
 
-### Create a Cluster
-
-* Initialize (cb-spider)
+* Initialize cloud connection (cb-spider)
 
 ```
 $ cbctl create driver --csp aws
@@ -76,7 +66,6 @@ $ cbctl create cluster \
 
 ## User Guide
 
-* Commands
 ```
 $ cbctl create [cluster/node/driver/credential/region/connection]
 $ cbctl get [cluster/node/driver/credential/region/connection/mcis]
@@ -87,65 +76,6 @@ $ cbctl clean [mcis]
 ```
 
 ### Create
-
-* Create a Cloud Driver.
-```
-$ cbctl create driver --csp aws
-$ cbctl create driver --csp gcp
-$ cbctl create driver --csp azure
-$ cbctl create driver --csp alibaba
-$ cbctl create driver --csp tencent
-$ cbctl create driver --csp ibm
-$ cbctl create driver --csp openstack
-$ cbctl create driver --csp cloudit
-```
-
-* Create a Credential
-```
-$ source ./examples/credentials.sh \
-  aws="${HOME}/.aws/credentials" \
-  gcp="${HOME}/.ssh/google-credential-cloudbarista.json" \
-  azure="${HOME}/.azure/azure-credential-cloudbarista.json" \
-  alibaba="${HOME}/.ssh/alibaba_accesskey.csv" \
-  tencent="${HOME}/.tccli/default.credential" \
-  openstack="${HOME}/.ssh/openstack-openrc.sh" \
-  cloudit="${HOME}/.ssh/cloudit-credential.sh"
-
-$ cbctl create credential credential-aws --csp aws --secret-id "$AWS_SECRET_ID" --secret "$AWS_SECRET_KEY"
-$ cbctl create credential credential-gcp --csp gcp --client-email "$GCP_SA" --project-id "$GCP_PROJECT" --private-key "$GCP_PKEY"
-$ cbctl create credential credential-azure --csp azure --secret-id "$AZURE_CLIENT_ID" --secret "$AZURE_CLIENT_SECRET" --subscription "$AZURE_SUBSCRIPTION_ID" --tenant "$AZURE_TENANT_ID"
-$ cbctl create credential credential-alibaba --csp alibaba --secret-id "$ALIBABA_SECRET_ID" --secret "$ALIBABA_SECRET_KEY"
-$ cbctl create credential credential-tencent --csp tencent --secret-id "$TENCENT_SECRET_ID" --secret "$TENCENT_SECRET_KEY"
-$ cbctl create credential credential-ibm --csp ibm --api-key "$IBM_API_KEY"
-$ cbctl create credential credential-openstack --csp openstack --endpoint "$OS_AUTH_URL" --project-id "$OS_PROJECT_ID" --username "$OS_USERNAME" --password "$OS_PASSWORD" --domain "$OS_USER_DOMAIN_NAME"
-$ cbctl create credential credential-cloudit --csp cloudit --endpoint "$CLOUDIT_ENDPOINT" --username "$CLOUDIT_USERNAME" --password "$CLOUDIT_PASSWORD" --token "$CLOUDIT_TOKEN" --tenant "$CLOUDIT_TENANT_ID"
-```
-
-* Create a Region
-```
-$ cbctl create region region-aws-tokyo --csp aws --region ap-northeast-1 --zone ap-northeast-1a 
-$ cbctl create region region-gcp-tokyo --csp gcp --region asia-northeast1 --zone asia-northeast1-a
-$ cbctl create region region-azure-tokyo --csp azure --location japaneast --resource-group cb-mcks
-$ cbctl create region region-alibaba-tokyo --csp alibaba --region ap-northeast-1 --zone ap-northeast-1a
-$ cbctl create region region-tencent-tokyo --csp tencent --region ap-tokyo --zone ap-tokyo-2
-$ cbctl create region region-ibm-tokyo --csp ibm --region jp-tok --zone jp-tok-1
-```
-
-* Create a Connection Info.
-```
-$ cbctl create connection config-aws-tokyo --csp aws --region region-aws-tokyo --credential credential-aws
-$ cbctl create connection config-gcp-tokyo --csp gcp --region region-gcp-tokyo --credential credential-gcp
-$ cbctl create connection config-azure-tokyo --csp azure --region region-azure-tokyo --credential credential-azure
-$ cbctl create connection config-alibaba-tokyo --csp alibaba --region region-alibaba-tokyo --credential credential-alibaba
-$ cbctl create connection config-tencent-tokyo --csp tencent --region region-tencent-tokyo --credential credential-tencent
-$ cbctl create connection config-ibm-tokyo --csp ibm --region region-ibm-tokyo --credential credential-ibm
-```
-
-* Create a cloud-barista namespace
-
-```
-$ cbctl create namespace acornsoft
-```
 
 * Create a Cluster
 
@@ -171,19 +101,78 @@ $ cbctl create node \
  --worker-spec="t2.medium"
 ```
 
-* Using Yaml File
+* Create a cloud driver.
+```
+$ cbctl create driver --csp [CSP]
+
+# examples
+$ cbctl create driver --csp aws
+$ cbctl create driver --csp gcp
+$ cbctl create driver --csp azure
+$ cbctl create driver --csp alibaba
+$ cbctl create driver --csp tencent
+$ cbctl create driver --csp ibm
+$ cbctl create driver --csp openstack
+$ cbctl create driver --csp cloudit
+```
+
+* Create a Region
+```
+$ cbctl create region [region name] --csp [CSP] --region [CSP region name] --zone [CSP zone name]
+$ cbctl create region [region name] --csp azure --location [location] --resource-group [resource group name]     # if azure
+
+# examples
+$ cbctl create region region-aws-tokyo --csp aws --region ap-northeast-1 --zone ap-northeast-1a 
+$ cbctl create region region-gcp-tokyo --csp gcp --region asia-northeast1 --zone asia-northeast1-a
+$ cbctl create region region-azure-tokyo --csp azure --location japaneast --resource-group cb-mcks
+$ cbctl create region region-alibaba-tokyo --csp alibaba --region ap-northeast-1 --zone ap-northeast-1a
+$ cbctl create region region-tencent-tokyo --csp tencent --region ap-tokyo --zone ap-tokyo-2
+$ cbctl create region region-ibm-tokyo --csp ibm --region jp-tok --zone jp-tok-1
+```
+
+* Create a credential
+```
+$ source ./examples/credentials.sh \
+  aws="${HOME}/.aws/credentials" \
+  gcp="${HOME}/.ssh/google-credential-cloudbarista.json" \
+  azure="${HOME}/.azure/azure-credential-cloudbarista.json" \
+  alibaba="${HOME}/.ssh/alibaba_accesskey.csv" \
+  tencent="${HOME}/.tccli/default.credential" \
+  openstack="${HOME}/.ssh/openstack-openrc.sh" \
+  cloudit="${HOME}/.ssh/cloudit-credential.sh"
+
+$ cbctl create credential credential-aws --csp aws --secret-id "$AWS_SECRET_ID" --secret "$AWS_SECRET_KEY"
+$ cbctl create credential credential-gcp --csp gcp --client-email "$GCP_SA" --project-id "$GCP_PROJECT" --private-key "$GCP_PKEY"
+$ cbctl create credential credential-azure --csp azure --secret-id "$AZURE_CLIENT_ID" --secret "$AZURE_CLIENT_SECRET" --subscription "$AZURE_SUBSCRIPTION_ID" --tenant "$AZURE_TENANT_ID"
+$ cbctl create credential credential-alibaba --csp alibaba --secret-id "$ALIBABA_SECRET_ID" --secret "$ALIBABA_SECRET_KEY"
+$ cbctl create credential credential-tencent --csp tencent --secret-id "$TENCENT_SECRET_ID" --secret "$TENCENT_SECRET_KEY"
+$ cbctl create credential credential-ibm --csp ibm --api-key "$IBM_API_KEY"
+$ cbctl create credential credential-openstack --csp openstack --endpoint "$OS_AUTH_URL" --project-id "$OS_PROJECT_ID" --username "$OS_USERNAME" --password "$OS_PASSWORD" --domain "$OS_USER_DOMAIN_NAME"
+$ cbctl create credential credential-cloudit --csp cloudit --endpoint "$CLOUDIT_ENDPOINT" --username "$CLOUDIT_USERNAME" --password "$CLOUDIT_PASSWORD" --token "$CLOUDIT_TOKEN" --tenant "$CLOUDIT_TENANT_ID"
+```
+
+
+* Create a Connection Info.
+```
+$ cbctl create connection [connection name] --csp [CSP] --region [region name] --credential [credential name]
+
+# examples
+$ cbctl create connection config-aws-tokyo --csp aws --region region-aws-tokyo --credential credential-aws
+$ cbctl create connection config-gcp-tokyo --csp gcp --region region-gcp-tokyo --credential credential-gcp
+$ cbctl create connection config-azure-tokyo --csp azure --region region-azure-tokyo --credential credential-azure
+$ cbctl create connection config-alibaba-tokyo --csp alibaba --region region-alibaba-tokyo --credential credential-alibaba
+$ cbctl create connection config-tencent-tokyo --csp tencent --region region-tencent-tokyo --credential credential-tencent
+$ cbctl create connection config-ibm-tokyo --csp ibm --region region-ibm-tokyo --credential credential-ibm
+```
+
+* Create a cloud-barista namespace
 
 ```
-$ cbctl create cluster -f examples/yaml/create-cluster.yaml
+$ cbctl create namespace [namespace name]
 
-$ cbctl create node --cluster cb-cluster -f - <<EOF
-worker: 
-  - connection: config-aws-tokyo
-    count: 1
-    spec: t2.medium
-EOF
+# example
+$ cbctl create namespace acornsoft
 ```
-
 
 ### Get
 
@@ -311,7 +300,7 @@ $ cbctl delete mcis "cb-cluster"
 ```
 
 
-* Delete the MCIRes
+* Delete the MCIRs
 ```
 $ cbctl delete driver [driver name]
 $ cbctl delete driver --name [driver name]
@@ -354,6 +343,96 @@ $ cbctl get-key  --name [node name] --cluster [cluster-name]
 $ cbctl get-key  "w-1-j4j8z" --cluster "cb-cluster"  > output/w-1-j4j8z.pem
 $ chmod 400 output/w-1-j4j8z.pem
 $ ssh -i output/w-1-j4j8z.pem cb-user@xxx.xxx.xxx.xxx
+```
+
+### Using Yaml File (filename)
+```
+$ cbctl create [cluster/node/driver/region/credential/connection/namespace] -f [URL]
+$ cbctl create [cluster/node/driver/region/credential/connection/namespace] -f [FILENAME]
+$ cbctl create [cluster/node/driver/region/credential/connection/namespace] -f [STDIN]
+```
+
+* examples - URL, FILENAME
+```
+$ cbctl create cluster -f examples/yaml/create-cluster.yaml
+$ cbctl create cluster -f https://github.com/itnpeople/cbctl/blob/master/examples/yaml/create-cluster.yaml
+```
+
+
+* examples - STDIN
+```
+# cluster
+$ cbctl create cluster -f - <<EOF
+name: cb-cluster
+label: lab.
+description: create a cluster test
+controlPlane:
+  - connection: config-aws-tokyo
+    count: 1
+    spec: t2.medium
+worker:
+  - connection: config-gcp-tokyo
+    count: 1
+    spec: e2-highcpu-4
+config:
+  kubernetes:
+    networkCni: calico
+    podCidr: 10.244.0.0/16
+    serviceCidr: 10.96.0.0/12
+    serviceDnsDomain: cluster.local
+EOF
+
+# nodes
+$ cbctl create node --cluster cb-cluster -f - <<EOF
+worker: 
+  - connection: config-aws-tokyo
+    count: 1
+    spec: t2.medium
+EOF
+
+# driver
+$ cbctl create driver -f - <<EOF
+DriverName : "aws-driver-v1.0"
+ProviderName : "AWS"
+DriverLibFileName : "aws-driver-v1.0.so"
+EOF
+
+# region
+$ cbctl create region -f - <<EOF
+RegionName : "region-aws-tokyo"
+ProviderName : "AWS"
+KeyValueInfoList :
+- Key : "Region"
+  Value : "ap-northeast-1"
+- Key : "Zone"
+  Value : "ap-northeast-1a"
+EOF
+
+# credential
+$ cbctl create credential -f - <<EOF
+CredentialName : "credential-aws"
+ProviderName : "AWS"
+KeyValueInfoList :
+- Key : "ClientId"
+  Value : "aaaaaaa"
+- Key : "ClientSecret"
+  Value : "bbbbbbbbbbbbbbbbbbbbbbbbb"
+EOF
+
+# connection
+$ cbctl create connection -f - <<EOF
+ConfigName : "config-aws-tokyo"
+ProviderName : "AWS" 
+DriverName : "aws-driver-v1.0" 
+CredentialName : "credential-aws"
+RegionName : "region-aws-tokyo"
+EOF
+
+# namespace
+$ cbctl create namespace -f - <<EOF
+name : "acornsoft"
+description : "acornsoft namespace"
+EOF
 ```
 
 ### Plugins

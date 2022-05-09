@@ -24,9 +24,10 @@ func NewCommandUpdateKubeconfig(options *app.Options) *cobra.Command {
 
 	// update-kubeconfig
 	return &cobra.Command{
-		Use:   "update-kubeconfig",
-		Short: "Update a kubeconfig",
-		Args:  app.BindCommandArgs(&o.Name),
+		Use:                   "update-kubeconfig (NAME | --name NAME) [options]",
+		Short:                 "Update a kubeconfig",
+		Args:                  app.BindCommandArgs(&o.Name),
+		DisableFlagsInUseLine: true,
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(c, func() error {
 				// vlidation

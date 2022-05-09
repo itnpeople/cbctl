@@ -16,9 +16,10 @@ func NewCommandGetKey(o *app.Options) *cobra.Command {
 	// update-kubeconfig
 	var clusterName string
 	cmd := &cobra.Command{
-		Use:   "get-key",
-		Short: "Get a SSH private key",
-		Args:  app.BindCommandArgs(&o.Name),
+		Use:                   "get-key (NAME | --name NAME) --cluster CLUSTER_NAME [options]",
+		Short:                 "Get a SSH private key",
+		Args:                  app.BindCommandArgs(&o.Name),
+		DisableFlagsInUseLine: true,
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(c, func() error {
 				// vlidation

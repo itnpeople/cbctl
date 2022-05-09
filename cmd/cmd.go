@@ -62,8 +62,9 @@ func NewRootCommand() *cobra.Command {
 
 	// add commands
 	cmds.AddCommand(&cobra.Command{
-		Use:   "version",
-		Short: "Print the version number of cbctl",
+		Use:                   "version",
+		Short:                 "Print the version number of cbctl",
+		DisableFlagsInUseLine: true,
 		Run: func(cmd *cobra.Command, args []string) {
 			o.Println("Version=%s, buildTime=%s", app.BuildVersion, app.BuildTime)
 		},

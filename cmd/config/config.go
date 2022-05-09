@@ -44,7 +44,7 @@ func NewCommandConfig(options *app.Options) *cobra.Command {
 
 	// add-context
 	cmdC := &cobra.Command{
-		Use:                   "add-context [name]",
+		Use:                   "add-context  (NAME | --name NAME) [options]",
 		Short:                 "Add a context",
 		DisableFlagsInUseLine: true,
 		Args:                  app.BindCommandArgs(&o.Name),
@@ -82,8 +82,9 @@ func NewCommandConfig(options *app.Options) *cobra.Command {
 
 	// view
 	cmds.AddCommand(&cobra.Command{
-		Use:   "view",
-		Short: "Get contexts",
+		Use:                   "view [options]",
+		Short:                 "Get contexts",
+		DisableFlagsInUseLine: true,
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(c, func() error {
 				o.writeYaml(app.Config)
@@ -94,9 +95,10 @@ func NewCommandConfig(options *app.Options) *cobra.Command {
 
 	// get context
 	cmds.AddCommand(&cobra.Command{
-		Use:   "get-context",
-		Short: "Get a context",
-		Args:  app.BindCommandArgs(&o.Name),
+		Use:                   "get-context  (NAME | --name NAME) [options]",
+		Short:                 "Get a context",
+		Args:                  app.BindCommandArgs(&o.Name),
+		DisableFlagsInUseLine: true,
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(c, func() error {
 				if o.Name == "" {
@@ -115,7 +117,7 @@ func NewCommandConfig(options *app.Options) *cobra.Command {
 
 	// set context
 	cmdS := &cobra.Command{
-		Use:                   "set-context [name]",
+		Use:                   "set-context  (NAME | --name NAME) [options]",
 		Short:                 "Set a context",
 		Args:                  app.BindCommandArgs(&o.Name),
 		DisableFlagsInUseLine: true,
@@ -152,10 +154,10 @@ func NewCommandConfig(options *app.Options) *cobra.Command {
 
 	// current-context (get/set)
 	cmds.AddCommand(&cobra.Command{
-		Use:                   "current-context [context]",
+		Use:                   "current-context (NAME | --name NAME) [options]",
 		Short:                 "Get/Set a current context",
-		DisableFlagsInUseLine: true,
 		Args:                  app.BindCommandArgs(&o.Name),
+		DisableFlagsInUseLine: true,
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(c, func() error {
 				if len(o.Name) > 0 {
@@ -175,10 +177,10 @@ func NewCommandConfig(options *app.Options) *cobra.Command {
 
 	// set-namespace
 	cmds.AddCommand(&cobra.Command{
-		Use:                   "set-namespace [namespace]",
+		Use:                   "set-namespace (NAME | --name NAME) [options]",
 		Short:                 "Get a current context",
+		Args:                  app.BindCommandArgs(&o.Name),
 		DisableFlagsInUseLine: true,
-		Args:                  app.BindCommandArgs(&o.Namespace),
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(c, func() error {
 				if len(o.Namespace) == 0 {
@@ -195,9 +197,10 @@ func NewCommandConfig(options *app.Options) *cobra.Command {
 
 	// delete-context
 	cmds.AddCommand(&cobra.Command{
-		Use:   "delete-context",
-		Short: "Delete a context",
-		Args:  app.BindCommandArgs(&o.Name),
+		Use:                   "delete-context (NAME | --name NAME) [options]",
+		Short:                 "Delete a context",
+		Args:                  app.BindCommandArgs(&o.Name),
+		DisableFlagsInUseLine: true,
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(c, func() error {
 				if o.Name == "" {

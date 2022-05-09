@@ -36,10 +36,10 @@ func NewCommandDelete(o *app.Options) *cobra.Command {
 
 	// cluster
 	cmds.AddCommand(&cobra.Command{
-		Use:                   "cluster",
+		Use:                   "cluster (NAME | --name NAME) [options]",
 		Short:                 "Delete a cluster",
-		DisableFlagsInUseLine: false,
 		Args:                  app.BindCommandArgs(&o.Name),
+		DisableFlagsInUseLine: false,
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(c, fnValidate())
 			app.ValidateError(c, func() error {
@@ -57,9 +57,10 @@ func NewCommandDelete(o *app.Options) *cobra.Command {
 	// node
 	var clusterName string
 	cmdNode := &cobra.Command{
-		Use:   "node",
-		Short: "Get nodes",
-		Args:  app.BindCommandArgs(&o.Name),
+		Use:                   "node (NAME | --name NAME) --cluster CLUSTER_NAME [options]",
+		Short:                 "Get nodes",
+		Args:                  app.BindCommandArgs(&o.Name),
+		DisableFlagsInUseLine: true,
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(c, fnValidate())
 			app.ValidateError(c, func() error {
@@ -83,9 +84,10 @@ func NewCommandDelete(o *app.Options) *cobra.Command {
 	// driver
 	var csp string
 	cmdDrv := &cobra.Command{
-		Use:   "driver",
-		Short: "Delete a cloud driver",
-		Args:  app.BindCommandArgs(&o.Name),
+		Use:                   "driver (NAME | --name NAME) [options]",
+		Short:                 "Delete a cloud driver",
+		Args:                  app.BindCommandArgs(&o.Name),
+		DisableFlagsInUseLine: true,
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(c, func() error {
 				url := fmt.Sprintf("%s/driver", app.Config.GetCurrentContext().Urls.Spider)
@@ -110,9 +112,10 @@ func NewCommandDelete(o *app.Options) *cobra.Command {
 
 	// region
 	cmds.AddCommand(&cobra.Command{
-		Use:   "region",
-		Short: "Delete a cloud region",
-		Args:  app.BindCommandArgs(&o.Name),
+		Use:                   "region (NAME | --name NAME) [options]",
+		Short:                 "Delete a cloud region",
+		Args:                  app.BindCommandArgs(&o.Name),
+		DisableFlagsInUseLine: true,
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(c, func() error {
 				if o.Name == "" {
@@ -130,9 +133,10 @@ func NewCommandDelete(o *app.Options) *cobra.Command {
 
 	// credential
 	cmds.AddCommand(&cobra.Command{
-		Use:   "credential",
-		Short: "Delete a cloud credential",
-		Args:  app.BindCommandArgs(&o.Name),
+		Use:                   "credential (NAME | --name NAME) [options]",
+		Short:                 "Delete a cloud credential",
+		Args:                  app.BindCommandArgs(&o.Name),
+		DisableFlagsInUseLine: true,
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(c, func() error {
 				if o.Name == "" {
@@ -150,9 +154,10 @@ func NewCommandDelete(o *app.Options) *cobra.Command {
 
 	// connection
 	cmds.AddCommand(&cobra.Command{
-		Use:   "connection",
-		Short: "Delete a cloud connection info.",
-		Args:  app.BindCommandArgs(&o.Name),
+		Use:                   "connection (NAME | --name NAME) [options]",
+		Short:                 "Delete a cloud connection info.",
+		Args:                  app.BindCommandArgs(&o.Name),
+		DisableFlagsInUseLine: true,
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(c, func() error {
 				if o.Name == "" {
@@ -170,9 +175,10 @@ func NewCommandDelete(o *app.Options) *cobra.Command {
 
 	// namespace
 	cmds.AddCommand(&cobra.Command{
-		Use:   "namespace",
-		Short: "Delete a namespace.",
-		Args:  app.BindCommandArgs(&o.Name),
+		Use:                   "namespace (NAME | --name NAME) [options]",
+		Short:                 "Delete a namespace.",
+		Args:                  app.BindCommandArgs(&o.Name),
+		DisableFlagsInUseLine: true,
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(c, func() error {
 				if o.Name == "" {
@@ -191,9 +197,10 @@ func NewCommandDelete(o *app.Options) *cobra.Command {
 
 	// mcis
 	cmds.AddCommand(&cobra.Command{
-		Use:   "mcis",
-		Short: "Delete a MCIS.",
-		Args:  app.BindCommandArgs(&o.Name),
+		Use:                   "mcis (NAME | --name NAME) [options]",
+		Short:                 "Delete a MCIS.",
+		Args:                  app.BindCommandArgs(&o.Name),
+		DisableFlagsInUseLine: true,
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(c, func() error {
 				url := fmt.Sprintf("%s/ns/%s/mcis/%s?action=terminate", app.Config.GetCurrentContext().Urls.Tumblebug, o.Namespace, o.Name)

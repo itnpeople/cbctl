@@ -23,11 +23,14 @@ func NewCommandDriver(options *app.Options) *cobra.Command {
 
 	// create
 	cmd := &cobra.Command{
-		Use:   "driver",
-		Short: "Create a cloud driver",
-		Args:  app.BindCommandArgs(&o.CSP),
+		Use:                   "driver (CSP | --csp CSP | -f FILENAME) [options]",
+		Short:                 "Create a cloud driver",
+		DisableFlagsInUseLine: true,
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(c, func() error {
+				if o.Filename == "" && o.CSP == "" {
+					return fmt.Errorf("CSP is required.")
+				}
 				if out, err := app.GetBody(o, `{
 					"DriverName"        : "{{ .CSP }}-driver-v1.0",
 					"ProviderName"      : "{{ .CSP | ToUpper }}",

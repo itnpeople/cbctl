@@ -27,16 +27,19 @@ func NewCommandRegion(options *app.Options) *cobra.Command {
 	}
 
 	cmd := &cobra.Command{
-		Use:   "region",
-		Short: "Create a cloud region",
-		Args:  app.BindCommandArgs(&o.Name),
+		Use:                   "region (NAME | --name NAME | -f FILENAME) [options]",
+		Short:                 "Create a cloud region",
+		Args:                  app.BindCommandArgs(&o.Name),
+		DisableFlagsInUseLine: true,
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(c, func() error {
-				if o.CSP == "" {
-					return fmt.Errorf("CSP is required.")
-				}
-				if o.CSP == "azure" && (o.Location == "" || o.ResourceGroup == "") {
-					return fmt.Errorf("Invalid location/resource-group flag (csp=%s, key=%s, secret=%s)", o.CSP, o.Location, o.ResourceGroup)
+				if o.Filename == "" {
+					if o.CSP == "" {
+						return fmt.Errorf("CSP is required.")
+					}
+					if o.CSP == "azure" && (o.Location == "" || o.ResourceGroup == "") {
+						return fmt.Errorf("Invalid location/resource-group flag (csp=%s, key=%s, secret=%s)", o.CSP, o.Location, o.ResourceGroup)
+					}
 				}
 				if out, err := app.GetBody(o, `{
 					"RegionName"       : "{{ .Name }}",
