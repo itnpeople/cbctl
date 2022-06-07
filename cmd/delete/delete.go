@@ -202,6 +202,7 @@ func NewCommandDelete(o *app.Options) *cobra.Command {
 		Args:                  app.BindCommandArgs(&o.Name),
 		DisableFlagsInUseLine: true,
 		Run: func(c *cobra.Command, args []string) {
+			app.ValidateError(c, fnValidate())
 			app.ValidateError(c, func() error {
 				url := fmt.Sprintf("%s/ns/%s/mcis/%s?action=terminate", app.Config.GetCurrentContext().Urls.Tumblebug, o.Namespace, o.Name)
 				http := resty.New().SetDisableWarn(true).R().SetBasicAuth("default", "default")
