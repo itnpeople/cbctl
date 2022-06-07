@@ -32,8 +32,8 @@ func NewCommandNamespace(options *app.Options) *cobra.Command {
 					return fmt.Errorf("Name is required.")
 				}
 				if out, err := app.GetBody(o, `{
-					"name"        : "{{NAME}}",
-					"description" : "{{Description}}"
+					"name"        : "{{ .Name }}",
+					"description" : "{{ .Description }}"
 				}`); err != nil {
 					return err
 				} else {
