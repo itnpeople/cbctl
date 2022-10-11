@@ -376,7 +376,7 @@ worker:
     spec: e2-highcpu-4
 config:
   kubernetes:
-    networkCni: calico
+    networkCni: canal
     podCidr: 10.244.0.0/16
     serviceCidr: 10.96.0.0/12
     serviceDnsDomain: cluster.local

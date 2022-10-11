@@ -25,6 +25,7 @@ func NewCommandDriver(options *app.Options) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                   "driver (CSP | --csp CSP | -f FILENAME) [options]",
 		Short:                 "Create a cloud driver",
+		Args:                  app.BindCommandArgs(&o.CSP),
 		DisableFlagsInUseLine: true,
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(c, func() error {
