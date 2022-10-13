@@ -166,7 +166,6 @@ $ cbctl create connection config-ibm-tokyo --csp ibm --region region-ibm-tokyo -
 ```
 
 * Create a cloud-barista namespace
-
 ```
 $ cbctl create namespace [namespace name]
 
@@ -247,24 +246,43 @@ $ cbctl get connection
 $ cbctl get connection "config-aws-tokyo"
 ```
 
-* Get VM specifications (verify the Connection Info.)
+* Get MCISes
+```
+$ cbctl get mcis --namespace [namespace]
+$ cbctl get mcis [NAME]  --namespace [namespace]
+
+$ cbctl get mcis  --namespace acornsoft
+$ cbctl get mcis "cb-cluster" --namespace acornsoft
+```
+
+* Get MCIS Resources
 
 ```
-$ cbctl get spec --connection [connection name]
+$ cbctl get vpc --namespace [namespace]
+$ cbctl get sg --namespace [namespace]
+$ cbctl get sshkey --namespace [namespace]
+$ cbctl get image --namespace [namespace]
+$ cbctl get spec --namespace [namespace]
+
+$ cbctl get vpc [NAME] --namespace [namespace]
+$ cbctl get sg [NAME] --namespace [namespace]
+$ cbctl get sshkey [NAME] --namespace [namespace]
+$ cbctl get image [NAME] --namespace [namespace]
+$ cbctl get spec [NAME] --namespace [namespace]
 
 
 # examples
-$ cbctl get spec --connection config-aws-tokyo
-```
+$ cbctl get vpc --namespace acornsoft
+$ cbctl get sg --namespace acornsoft
+$ cbctl get sshkey --namespace acornsoft
+$ cbctl get image --namespace acornsoft
+$ cbctl get spec --namespace acornsoft
 
-* Get MCISes
-```
-$ cbctl get mcis
-$ cbctl get mcis [mcis name]
-$ cbctl get mcis --name [mcis name]
-
-$ cbctl get mcis
-$ cbctl get mcis "cb-cluster"
+$ cbctl get vpc config-aws-tokyo-vpc --namespace acornsoft
+$ cbctl get sg config-aws-tokyo-sg --namespace acornsoft
+$ cbctl get sshkey config-aws-tokyo-sshkey --namespace acornsoft
+$ cbctl get image config-aws-tokyo-ubuntu1804 --namespace acornsoft
+$ cbctl get spec config-aws-tokyo-t2-medium-spec --namespace acornsoft
 ```
 
 
@@ -289,14 +307,45 @@ $ cbctl delete node --name [node name] --cluster [cluster name]
 $ cbctl delete node "w-1-j4j8z" --cluster "cb-cluster"
 ```
 
+
 * Delete the MCIS
 ```
-$ cbctl delete mcis [mcis name]
-$ cbctl delete mcis --name [mcis name]
+$ cbctl delete mcis [NAME] --namespace [namespace]
+$ cbctl delete mcis --name [NAME] --namespace [namespace]
 
 
 # examples
 $ cbctl delete mcis "cb-cluster"
+$ cbctl delete mcis "cb-cluster" --namespace acornsoft
+```
+
+* Delete the MCIS resources
+```
+$ cbctl delete vpc --namespace [namespace]
+$ cbctl delete sg --namespace [namespace]
+$ cbctl delete sshkey --namespace [namespace]
+$ cbctl delete image --namespace [namespace]
+$ cbctl delete spec --namespace [namespace]
+
+$ cbctl delete vpc [NAME] --namespace [namespace]
+$ cbctl delete sg [NAME] --namespace [namespace]
+$ cbctl delete sshkey [NAME] --namespace [namespace]
+$ cbctl delete image [NAME] --namespace [namespace]
+$ cbctl delete spec [NAME] --namespace [namespace]
+
+# examples
+$ cbctl delete vpc --namespace acornsoft
+$ cbctl delete sg --namespace acornsoft
+$ cbctl delete sshkey --namespace acornsoft
+$ cbctl delete image --namespace acornsoft
+$ cbctl delete spec --namespace acornsoft
+
+$ cbctl delete vpc config-aws-tokyo-vpc --namespace acornsoft
+$ cbctl delete sg config-aws-tokyo-sg --namespace acornsoft
+$ cbctl delete sshkey config-aws-tokyo-sshkey --namespace acornsoft
+$ cbctl delete image config-aws-tokyo-ubuntu1804 --namespace acornsoft
+$ cbctl delete spec config-aws-tokyo-t2-medium-spec --namespace acornsoft
+
 ```
 
 

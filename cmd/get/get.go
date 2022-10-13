@@ -1,10 +1,7 @@
 package get
 
 import (
-	"bytes"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 
 	"github.com/go-resty/resty/v2"
 	"github.com/spf13/cobra"
@@ -203,16 +200,63 @@ func NewCommandGet(o *app.Options) *cobra.Command {
 		},
 	})
 
-	// mcis
+	// vpc
 	cmds.AddCommand(&cobra.Command{
-		Use:                "mcis (NAME | --name NAME) [options]",
-		Short:              "Get MCISs.",
-		Args:               app.BindCommandArgs(&o.Name),
-		DisableFlagParsing: true,
+		Use:   "vpc (NAME | --name NAME) [options]",
+		Short: "Get VPCs.",
+		Args:  app.BindCommandArgs(&o.Name),
 		Run: func(c *cobra.Command, args []string) {
 			app.ValidateError(c, fnValidate())
 			app.ValidateError(c, func() error {
-				url := fmt.Sprintf("%s/ns/%s/mcis", app.Config.GetCurrentContext().Urls.Tumblebug, o.Namespace)
+				url := fmt.Sprintf("%s/ns/%s/resources/vNet", app.Config.GetCurrentContext().Urls.Tumblebug, o.Namespace)
+				if o.Name != "" {
+					url += "/" + o.Name
+				}
+				http := resty.New().SetDisableWarn(true).R().SetBasicAuth("default", "default")
+				if resp, err := http.Get(url); err != nil {
+					return err
+				} else {
+					o.WriteBody(resp.Body())
+				}
+
+				return nil
+			}())
+		},
+	})
+
+	// security group
+	cmds.AddCommand(&cobra.Command{
+		Use:   "sg (NAME | --name NAME) [options]",
+		Short: "Get Security Groups.",
+		Args:  app.BindCommandArgs(&o.Name),
+		Run: func(c *cobra.Command, args []string) {
+			app.ValidateError(c, fnValidate())
+			app.ValidateError(c, func() error {
+				url := fmt.Sprintf("%s/ns/%s/resources/securityGroup", app.Config.GetCurrentContext().Urls.Tumblebug, o.Namespace)
+				if o.Name != "" {
+					url += "/" + o.Name
+				}
+				fmt.Println(url)
+				http := resty.New().SetDisableWarn(true).R().SetBasicAuth("default", "default")
+				if resp, err := http.Get(url); err != nil {
+					return err
+				} else {
+					o.WriteBody(resp.Body())
+				}
+				return nil
+			}())
+		},
+	})
+
+	// ssh-key
+	cmds.AddCommand(&cobra.Command{
+		Use:   "sshkey (NAME | --name NAME) [options]",
+		Short: "Get SSH Keys.",
+		Args:  app.BindCommandArgs(&o.Name),
+		Run: func(c *cobra.Command, args []string) {
+			app.ValidateError(c, fnValidate())
+			app.ValidateError(c, func() error {
+				url := fmt.Sprintf("%s/ns/%s/resources/sshKey", app.Config.GetCurrentContext().Urls.Tumblebug, o.Namespace)
 				if o.Name != "" {
 					url += "/" + o.Name
 				}
@@ -227,39 +271,75 @@ func NewCommandGet(o *app.Options) *cobra.Command {
 		},
 	})
 
-	// vmspec
-	var config string
-	cmdSpec := &cobra.Command{
-		Use:   "spec --connection [name of connection-info.]",
-		Short: "Get VM specifications.",
+	// images
+	cmds.AddCommand(&cobra.Command{
+		Use:   "image (NAME | --name NAME) [options]",
+		Short: "Get Disk Images.",
+		Args:  app.BindCommandArgs(&o.Name),
 		Run: func(c *cobra.Command, args []string) {
+			app.ValidateError(c, fnValidate())
 			app.ValidateError(c, func() error {
-				if config == "" {
-					c.Help()
-				} else {
-					// resty-go Get 인 경우 body를 혀용하지 않아서 "net/http" 모듈 사용
-					body := bytes.NewBufferString(fmt.Sprintf("{\"connectionName\": \"%s\"}", config))
-					req, err := http.NewRequest("GET", fmt.Sprintf("%s/vmspec", app.Config.GetCurrentContext().Urls.Spider), body)
-					if err != nil {
-						return err
-					}
-					req.Header.Add("Content-Type", "application/json")
-					client := &http.Client{}
-					resp, err := client.Do(req)
-					if err != nil {
-						return err
-					}
-					defer resp.Body.Close()
-
-					bytes, _ := ioutil.ReadAll(resp.Body)
-					o.WriteBody(bytes)
+				url := fmt.Sprintf("%s/ns/%s/resources/image", app.Config.GetCurrentContext().Urls.Tumblebug, o.Namespace)
+				if o.Name != "" {
+					url += "/" + o.Name
 				}
-
+				http := resty.New().SetDisableWarn(true).R().SetBasicAuth("default", "default")
+				if resp, err := http.Get(url); err != nil {
+					return err
+				} else {
+					o.WriteBody(resp.Body())
+				}
 				return nil
 			}())
 		},
-	}
-	cmdSpec.Flags().StringVar(&config, "connection", "", "Name of connection info.")
-	cmds.AddCommand(cmdSpec)
+	})
+
+	// spec
+	cmds.AddCommand(&cobra.Command{
+		Use:   "spec (NAME | --name NAME) [options]",
+		Short: "Get VM specifications.",
+		Args:  app.BindCommandArgs(&o.Name),
+		Run: func(c *cobra.Command, args []string) {
+			app.ValidateError(c, fnValidate())
+			app.ValidateError(c, func() error {
+				url := fmt.Sprintf("%s/ns/%s/resources/spec", app.Config.GetCurrentContext().Urls.Tumblebug, o.Namespace)
+				if o.Name != "" {
+					url += "/" + o.Name
+				}
+				http := resty.New().SetDisableWarn(true).R().SetBasicAuth("default", "default")
+				if resp, err := http.Get(url); err != nil {
+					return err
+				} else {
+					o.WriteBody(resp.Body())
+				}
+				return nil
+			}())
+		},
+	})
+
+	// mcis
+	cmds.AddCommand(&cobra.Command{
+		Use:   "mcis (NAME | --name NAME) [options]",
+		Short: "Get MCISs.",
+		Args:  app.BindCommandArgs(&o.Name),
+		Run: func(c *cobra.Command, args []string) {
+			app.ValidateError(c, fnValidate())
+			app.ValidateError(c, func() error {
+				url := fmt.Sprintf("%s/ns/%s/mcis", app.Config.GetCurrentContext().Urls.Tumblebug, o.Namespace)
+				if o.Name != "" {
+					url += "/" + o.Name
+				}
+				fmt.Println(url)
+				http := resty.New().SetDisableWarn(true).R().SetBasicAuth("default", "default")
+				if resp, err := http.Get(url); err != nil {
+					return err
+				} else {
+					o.WriteBody(resp.Body())
+				}
+				return nil
+			}())
+		},
+	})
+
 	return cmds
 }

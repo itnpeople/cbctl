@@ -195,6 +195,131 @@ func NewCommandDelete(o *app.Options) *cobra.Command {
 		},
 	})
 
+	// vpc
+	cmds.AddCommand(&cobra.Command{
+		Use:   "vpc (NAME | --name NAME) [options]",
+		Short: "Delete VPCs.",
+		Args:  app.BindCommandArgs(&o.Name),
+		Run: func(c *cobra.Command, args []string) {
+			app.ValidateError(c, func() error {
+				if o.Namespace == "" {
+					return fmt.Errorf("Namespace is required.")
+				}
+				url := fmt.Sprintf("%s/ns/%s/resources/vNet", app.Config.GetCurrentContext().Urls.Tumblebug, o.Namespace)
+				if o.Name != "" {
+					url += "/" + o.Name
+				}
+				http := resty.New().SetDisableWarn(true).R().SetBasicAuth("default", "default")
+				if resp, err := http.Delete(url); err != nil {
+					return err
+				} else {
+					o.WriteBody(resp.Body())
+				}
+				return nil
+			}())
+		},
+	})
+
+	// security group
+	cmds.AddCommand(&cobra.Command{
+		Use:   "sg (NAME | --name NAME) [options]",
+		Short: "Delete Security Groups.",
+		Args:  app.BindCommandArgs(&o.Name),
+		Run: func(c *cobra.Command, args []string) {
+			app.ValidateError(c, func() error {
+				if o.Namespace == "" {
+					return fmt.Errorf("Namespace is required.")
+				}
+				url := fmt.Sprintf("%s/ns/%s/resources/securityGroup", app.Config.GetCurrentContext().Urls.Tumblebug, o.Namespace)
+				if o.Name != "" {
+					url += "/" + o.Name
+				}
+				http := resty.New().SetDisableWarn(true).R().SetBasicAuth("default", "default")
+				if resp, err := http.Delete(url); err != nil {
+					return err
+				} else {
+					o.WriteBody(resp.Body())
+				}
+				return nil
+			}())
+		},
+	})
+
+	// ssh-key
+	cmds.AddCommand(&cobra.Command{
+		Use:   "sshkey (NAME | --name NAME) [options]",
+		Short: "Delete SSH-Keys.",
+		Args:  app.BindCommandArgs(&o.Name),
+		Run: func(c *cobra.Command, args []string) {
+			app.ValidateError(c, func() error {
+				if o.Namespace == "" {
+					return fmt.Errorf("Namespace is required.")
+				}
+				url := fmt.Sprintf("%s/ns/%s/resources/sshKey", app.Config.GetCurrentContext().Urls.Tumblebug, o.Namespace)
+				if o.Name != "" {
+					url += "/" + o.Name
+				}
+				http := resty.New().SetDisableWarn(true).R().SetBasicAuth("default", "default")
+				if resp, err := http.Delete(url); err != nil {
+					return err
+				} else {
+					o.WriteBody(resp.Body())
+				}
+				return nil
+			}())
+		},
+	})
+
+	// images
+	cmds.AddCommand(&cobra.Command{
+		Use:   "image (NAME | --name NAME) [options]",
+		Short: "Delete images.",
+		Args:  app.BindCommandArgs(&o.Name),
+		Run: func(c *cobra.Command, args []string) {
+			app.ValidateError(c, func() error {
+				if o.Namespace == "" {
+					return fmt.Errorf("Namespace is required.")
+				}
+				url := fmt.Sprintf("%s/ns/%s/resources/image", app.Config.GetCurrentContext().Urls.Tumblebug, o.Namespace)
+				if o.Name != "" {
+					url += "/" + o.Name
+				}
+				http := resty.New().SetDisableWarn(true).R().SetBasicAuth("default", "default")
+				if resp, err := http.Delete(url); err != nil {
+					return err
+				} else {
+					o.WriteBody(resp.Body())
+				}
+				return nil
+			}())
+		},
+	})
+
+	// spec
+	cmds.AddCommand(&cobra.Command{
+		Use:   "spec (NAME | --name NAME) [options]",
+		Short: "Delete VM Specifications.",
+		Args:  app.BindCommandArgs(&o.Name),
+		Run: func(c *cobra.Command, args []string) {
+			app.ValidateError(c, func() error {
+				if o.Namespace == "" {
+					return fmt.Errorf("Namespace is required.")
+				}
+				url := fmt.Sprintf("%s/ns/%s/resources/spec", app.Config.GetCurrentContext().Urls.Tumblebug, o.Namespace)
+				if o.Name != "" {
+					url += "/" + o.Name
+				}
+				http := resty.New().SetDisableWarn(true).R().SetBasicAuth("default", "default")
+				if resp, err := http.Delete(url); err != nil {
+					return err
+				} else {
+					o.WriteBody(resp.Body())
+				}
+				return nil
+			}())
+		},
+	})
+
 	// mcis
 	cmds.AddCommand(&cobra.Command{
 		Use:                   "mcis (NAME | --name NAME) [options]",
