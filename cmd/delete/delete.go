@@ -13,8 +13,8 @@ import (
 // returns a cobra command
 func NewCommandDelete(o *app.Options) *cobra.Command {
 
+	o.Namespace = utils.NVL(o.Namespace, app.Config.GetCurrentContext().Namespace)
 	fnValidate := func() error {
-		o.Namespace = utils.NVL(o.Namespace, app.Config.GetCurrentContext().Namespace)
 		if o.Namespace == "" {
 			return fmt.Errorf("Namespace is required.")
 		}
